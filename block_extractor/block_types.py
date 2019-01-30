@@ -1,0 +1,4 @@
+DATA = "_DATA_"
+EMPTY = "EMPTY"
+DATE = "DATE"
+META = "META"
