@@ -12,7 +12,9 @@ def main():
     #        "/power_generation_q2_2017/example/Power Generation Q2 2017.xlsx"
 
     # file = "/Users/work/Downloads/FAOSTAT_South_Sudan_Food_Aid_data_2014-2015.csv"
-    file = "/Users/work/Downloads/FAOSTAT_crop_yields.csv"
+    #file = "/Users/work/Downloads/FAOSTAT_crop_yields.csv"
+    file = "/Users/work/Downloads/Crops_TrendAnalysis_2014-2016.csv"
+
     classifier = CRFCellClassifier()
     block_extractor = SimpleBlockExtractor()
     layout_detector = SimpleLayoutDetector()
