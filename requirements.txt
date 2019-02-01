@@ -2,3 +2,6 @@ pyyaml
 pyexcel
 numpy
 xlrd
+pystruct
+cvxopt
+sklearn
