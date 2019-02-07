@@ -1,4 +1,5 @@
 from layout_detector.layout_detector import LayoutDetector
+from layout_detector.layout_graph import LayoutGraph
 from block_extractor import block_types
 
 # """
@@ -25,11 +26,12 @@ class SimpleLayoutDetector(LayoutDetector):
     Returns an adjacency list with block_idx as vertex
     """
     def detect_layout(self, sheet, tags, blocks):
-        layout_graph = [self.neighbors(i, blocks) for i in range(len(blocks))]
+        layout_graph = LayoutGraph(blocks)
 
-        # Make edges bidirectional
-        for vertex_num, neighbor_set in enumerate(layout_graph):
-            for other_vertex in neighbor_set:
-                layout_graph[other_vertex].add(vertex_num)
+        for i in range(len(blocks)):
+            neighbor_set = self.neighbors(i, blocks)
+            for vertex in neighbor_set:
+                print (vertex, i, "HI")
+                layout_graph.add_edge("meta", vertex, i)
 
         return layout_graph
