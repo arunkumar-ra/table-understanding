@@ -1,0 +1,148 @@
+"""
+Experimental code. Subject to change
+"""
+
+
+from block_extractor.simple_block import SimpleBlock
+from block_extractor.block_types import block_map
+from typing import List
+from layout_detector.layout_graph import LayoutGraph
+from layout_detector.crf import label_space
+
+import numpy as np
+
+class Featurize:
+    def __init__(self, sheetList: List, tagsList: List, blocksList: List):
+        self.sheetList = sheetList
+        self.tagsList = tagsList
+        self.blocksList = blocksList
+        self.vertexDict = dict()
+
+    def get_input_features_for_table(self, table_num, sheet, tags, blocks):
+
+        edge_map = []
+        edge_features = []
+        feature_map = []
+        linked_blocks = []
+        self.vertexDict[table_num] = dict()
+
+        # List all nodes in the CRF
+        # Assuming edges in both directions exist
+        vertex_num = 0
+        for i in range(len(blocks)):
+            for j in range(len(blocks)):
+                # Node (i, j) in CRF
+                if i != j:
+                    # edge_map.append([i, j])
+                    feature_map.append(self.get_block_relation_features(blocks[i], blocks[j]))
+                    linked_blocks.append([i, j])
+
+                    # Create a map from (block_a, block_b) pair to vertex_id
+                    # Remember all vertex id assignments
+                    self.vertexDict[table_num][(i, j)] = vertex_num
+                    vertex_num += 1
+
+        # print(self.vertexDict[table_num])
+
+        # List all edges in CRF
+        # An edge in the CRF would have a common block
+        for x1 in range(len(linked_blocks)):
+            for x2 in range(len(linked_blocks)):
+                i1, j1 = linked_blocks[x1]
+                i2, j2 = linked_blocks[x2]
+
+                vertex_1 = self.vertexDict[table_num][(i1, j1)]
+                vertex_2 = self.vertexDict[table_num][(i2, j2)]
+
+                if (i1, j1) == (i2, j2):
+                    pass  # same link
+                elif (i1, j1) == (j2, i2):
+                    # opposite links! what to do here?
+                    # TODO: add features from both blocks
+                    pass
+                elif (i1 != i2 and j1 != j2) and (i1 != j2 and j1 != i2):
+                    # links have no common block
+                    pass
+                # elif (i1 == j1) or (i2 == j2):
+                #     pass
+                else:
+                    # print(i1, j1, i2, j2)
+                    edge_map.append([vertex_1, vertex_2])
+                    edge_feature = feature_map[vertex_1] + feature_map[vertex_2]
+                    edge_features.append(np.array(edge_feature))
+                    # TODO: also add edge features here
+
+        return np.array(feature_map), np.array(edge_map), np.array(edge_features)
+
+    def get_input_features(self):
+
+        X_graph = []
+
+        for k in range(len(self.sheetList)):
+            sheet = self.sheetList[k]
+            tags = self.tagsList[k]
+            blocks = self.blocksList[k]
+
+            feature_map, edge_map, edge_features = self.get_input_features_for_table(k, sheet, tags, blocks)
+
+            # print(np.array(feature_map).shape)
+            # print(np.array(edge_map).shape)
+            # print(np.array(edge_features).shape)
+            X_graph.append((feature_map, edge_map, edge_features))
+
+        return X_graph
+
+    def get_label_map(self, layoutList: List[LayoutGraph]):
+        labelsList = []
+        # convert labels to keys
+        for i in range(len(layoutList)):
+            vertexDict = self.vertexDict[i]
+            layout = layoutList[i]
+
+            # For each link, what is the label?
+            label_size = len(vertexDict)
+            # print("Number of labels is {}".format(label_size))
+
+            labelsList.append(np.zeros(label_size, dtype=int))
+
+            for j in range(len(layout.outEdges)):
+                v1 = j
+                for type, v2 in layout.outEdges[v1]:
+                    vertex_num = vertexDict[(v1, v2)]
+                    labelsList[i][vertex_num] = label_space.edge_labels[type]
+                    # print("({}, {}) is assigned type: {}".format(v1, v2, type))
+
+            # print(labelsList[i])
+
+        return np.array(labelsList)
+
+
+    def get_block_relation_features(self, block1: SimpleBlock, block2: SimpleBlock):
+        features = []
+
+        # Add block 1 type
+        features.extend([0] * len(block_map))
+        features[block_map[block1.get_block_type()]] = 1
+
+        # Add block 2 type
+        features.extend([0] * len(block_map))
+        features[block_map[block2.get_block_type()] + len(block_map)] = 1
+
+        # Are 2 blocks adjacent
+        features.append(block1.is_adjacent(block2))
+
+        # Are 2 blocks separated by 1 row/column
+        features.append(block1.are_blocks_within_x_row_or_column(2, block2))
+
+        # Are 2 blocks separated by 4 rows/columns
+        features.append(block1.are_blocks_within_x_row_or_column(5, block2))
+
+        # Are 2 blocks horizontal
+        features.append(block1.are_blocks_horizontal(block2))
+
+        # Are 2 blocks vertical
+        features.append(block1.are_blocks_vertical(block2))
+
+        # Do the blocks have a block in between # cannot compute with this input
+
+        return features

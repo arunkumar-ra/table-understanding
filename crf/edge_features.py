@@ -1,5 +1,5 @@
 from crf.edge_map import get_edge_map
-from utils.string_utils import string2int, data_to_string
+from util.string_utils import string2int, data_to_string
 import numpy as np
 
 

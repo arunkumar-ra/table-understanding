@@ -1,4 +1,4 @@
-from utils.string_utils import string2int, is_string_literal, data_to_string
+from util.string_utils import string2int, is_string_literal, data_to_string
 from dateutil.parser import parse
 from datetime import date, datetime
 import re
@@ -38,7 +38,7 @@ class DateParser:
         return self.is_year_range(self.int_value)
 
     def is_partial_date(self):
-        if isinstance(self.value, str) or isinstance(self.value, unicode):
+        if isinstance(self.value, str):
             return False
             # TODO: SPlit on symbols => check mapping to months
             # split on non-numbers => map to years

@@ -17,4 +17,3 @@ def is_string_literal(value):
     if isinstance(value, str):
         return True
     return False
-

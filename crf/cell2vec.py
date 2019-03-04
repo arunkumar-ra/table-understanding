@@ -1,7 +1,7 @@
 from crf.feature_utils import word_regex, alpha_regex, alphanum_regex, symbol_regex, empty_cell
 
 import numpy as np
-from utils.date_parser import DateParser
+from util.date_parser import DateParser
 
 class cell2vec:
     def __init__(self, value):

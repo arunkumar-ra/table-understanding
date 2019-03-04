@@ -2,10 +2,11 @@ import unittest
 from reader.csv_reader import CsvReader
 import numpy as np
 
+## Run as python -m unittest tests.reader_test.test_csv_reader
 
 class TestCSVReader(unittest.TestCase):
     def testFileIsReadCorrectly(self):
-        reader = CsvReader("../data/test.csv")  # TODO: Use absolute path
+        reader = CsvReader("tests/data/test.csv")
 
         sheet_gen = reader.get_sheets()
         sheet = next(sheet_gen)

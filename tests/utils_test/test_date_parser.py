@@ -1,4 +1,4 @@
-from utils.date_parser import DateParser
+from util.date_parser import DateParser
 from datetime import datetime
 import unittest
 
