@@ -39,7 +39,6 @@ class CRFCellClassifier(CellClassifier):
         x_graph = self.__get_features(sheet)
         predictions = self.model.predict([x_graph])[0]  # TODO: Direct access by index should be avoided
         tags = self.__predict_wrapper(predictions, sheet.shape[0], sheet.shape[1])
-        print(tags)
+        # print(tags)
 
         return tags
-

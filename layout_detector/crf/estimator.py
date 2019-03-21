@@ -14,16 +14,17 @@ from sklearn.model_selection import train_test_split
 
 
 class CRFLayoutEstimator:
-    def __init__(self, max_iter=50, C=0.03, tol=0.01):
+    def __init__(self, max_iter=50, C_range=[0.03], tol=0.01, eval_against_test=False):
         self.max_iter = max_iter
-        self.C = C
+        self.C_range = C_range
         self.tol = tol
+        self.eval_against_test = eval_against_test
 
-    def fit_crf(self, sheetList: List, tagsList: List, blocksList: List, layoutList: List):
-        ## Featurize input
+    def prepare_data(self, sheetList: List, tagsList: List, blocksList: List, layoutList: List):
         featurizer = Featurize(sheetList, tagsList, blocksList)
 
         print("Preparing data...")
+        print(len(sheetList), len(tagsList), len(blocksList), len(layoutList))
         X_graph = np.array(featurizer.get_input_features())
         y_graph = np.array(featurizer.get_label_map(layoutList))
 
@@ -38,29 +39,32 @@ class CRFLayoutEstimator:
         X_graph = np.array(X_g)
         y_graph = np.array(y_g)
 
-        # 60, 20, 20 split
+        return X_graph, y_graph
 
+    def set_input(self, sheetList: List, tagsList: List, blocksList: List, layoutList: List):
+        X_graph, y_graph = self.prepare_data(sheetList, tagsList, blocksList, layoutList)
+        # 60, 20, 20 split
         X_train, X_dev_test, y_train, y_dev_test = train_test_split(X_graph, y_graph, train_size=0.6, random_state=21)
-        X_dev, X_test, y_dev, y_test = train_test_split(X_dev_test, y_dev_test, test_size=0.5, random_state=22)
+        X_dev, X_test, y_dev, y_test = train_test_split(X_dev_test, y_dev_test, train_size=0.5, random_state=21)
+
+        self.X_train = X_train
+        self.X_dev = X_dev
+        self.X_test = X_test
+        self.y_train = y_train
+        self.y_dev = y_dev
+        self.y_test = y_test
 
         print("Train size: ", len(X_train))
         print("Dev size: ", len(X_dev))
         print("Test size: ", len(X_test))
 
-        total_score = 0.0
+    def evaluate_predictions(self, predictions, actuals):
 
         full_list_of_predictions = []
         full_list_of_ytrue = []
+        total_score = 0.0
 
-        model = EdgeFeatureGraphCRF(inference_method="ad3")  # , symmetric_edge_features=range(2))
-        # ssvm = FrankWolfeSSVM(model=model, max_iter=20)
-        ssvm = OneSlackSSVM(model, inference_cache=50, C=self.C, tol=self.tol, max_iter=self.max_iter, n_jobs=4, verbose=False)
-
-        ssvm.fit(X_train, y_train)
-
-        predictions = [x for x in ssvm.predict(X_dev)]
-
-        for (prediction, actual) in zip(predictions, y_dev):
+        for (prediction, actual) in zip(predictions, actuals):
 
             dataset_score = accuracy_score(actual, prediction)
             print(dataset_score)
@@ -71,22 +75,44 @@ class CRFLayoutEstimator:
             total_score += dataset_score
 
             if dataset_score != 1.0:
-                cnf_matrix = confusion_matrix(actual, prediction, labels=range(len(label_list)))
+                # cnf_matrix = confusion_matrix(actual, prediction, labels=range(len(label_list)))
                 # plot_confusion_matrix(cnf_matrix, classes=label_list)
 
                 print(prediction)
                 print(actual)
 
-        print("C value = ", self.C)
         print("Precision, Recall, F-Score, Support")
         print(precision_recall_fscore_support(full_list_of_ytrue, full_list_of_predictions))
         print("F1 Score: ", f1_score(full_list_of_ytrue, full_list_of_predictions, average=None, labels=label_keys))
 
-        #TODO: Train on the whole dataset
+    def fit_crf(self):
+        for C in self.C_range:
+            print("Testing C value: {}".format(C))
+            model = EdgeFeatureGraphCRF(inference_method="ad3")
+            ssvm = OneSlackSSVM(model, inference_cache=50, C=C, tol=self.tol, max_iter=self.max_iter, n_jobs=4, verbose=False)
+            ssvm.fit(self.X_train, self.y_train)
+            predictions = [x for x in ssvm.predict(self.X_dev)]
+            self.evaluate_predictions(predictions, self.y_dev)
 
-        # model = EdgeFeatureGraphCRF(inference_method="ad3")
-        # ssvm = OneSlackSSVM(model, inference_cache=50, C=self.C, tol=self.tol, max_iter=self.max_iter, n_jobs=4,
-        #                     verbose=True)
-        # ssvm.fit(X_graph, y_graph)
+        # Fit against the whole dataset except test
+        # Is this approach correct?
+        model = EdgeFeatureGraphCRF(inference_method="ad3")
+        ssvm = OneSlackSSVM(model, inference_cache=50, C=0.03, tol=self.tol, max_iter=self.max_iter, n_jobs=4,
+                            verbose=False)
+        X_train_dev = np.concatenate([self.X_train, self.X_dev])
+        y_train_dev = np.concatenate([self.y_train, self.y_dev])
+        ssvm.fit(X_train_dev, y_train_dev)
 
+        if self.eval_against_test:
+            predictions = [x for x in ssvm.predict(self.X_test)]
+            print("Test set evaluation")
+            self.evaluate_predictions(predictions, self.y_test)
+
+        self.model = ssvm
         return ssvm
+
+    def evaluate_test_set(self, sheetList: List, tagsList: List, blocksList: List, layoutList: List):
+        X_test, y_test = self.prepare_data(sheetList, tagsList, blocksList, layoutList)
+
+        predictions = [x for x in self.model.predict(X_test)]
+        self.evaluate_predictions(predictions, y_test)

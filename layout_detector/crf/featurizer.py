@@ -4,7 +4,7 @@ Experimental code. Subject to change
 
 
 from block_extractor.simple_block import SimpleBlock
-from block_extractor.block_types import block_map
+from block_extractor.new_block_types import block_map
 from typing import List
 from layout_detector.layout_graph import LayoutGraph
 from layout_detector.crf import label_space
@@ -144,5 +144,7 @@ class Featurize:
         features.append(block1.are_blocks_vertical(block2))
 
         # Do the blocks have a block in between # cannot compute with this input
+
+        # TODO: Does the block have any adjacent blocks? Important?
 
         return features

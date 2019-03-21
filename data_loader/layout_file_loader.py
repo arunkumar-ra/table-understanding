@@ -5,14 +5,6 @@ from layout_detector.layout_graph import LayoutGraph
 from typing import List
 
 
-block_map_from_annotation = {
-    "data": "_DATA_",
-    "date": "DATE",
-    "meta": "META",
-    "empty": "EMPTY"
-}
-
-
 class LayoutFileLoader:
     def __init__(self, layout_file):
         self.layout_file = layout_file
@@ -48,7 +40,6 @@ class LayoutFileLoader:
 
         for block_id in blocks:
             block_range, block_type = blocks[block_id].split("-")
-            block_type = block_map_from_annotation[block_type]  # TODO: Catch errors?
             top_row, left_col, bottom_row, right_col = excel_range2bbox(block_range)
             s = SimpleBlock(block_type, left_col, right_col, top_row, bottom_row)
 

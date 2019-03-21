@@ -7,6 +7,7 @@ label_dict = {
     "META": 1,
     "DATE": 2,
     "DATA": 3,
+    "_DATA_": 3,
     "empty": 0,
     "meta": 1,
     "date": 2,
