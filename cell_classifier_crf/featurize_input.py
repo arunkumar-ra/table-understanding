@@ -1,6 +1,6 @@
-from crf.cell2vec import cell2vec
+from cell_classifier_crf.cell2vec import cell2vec
 import numpy as np
-from crf.hints import merge_all_long_range_features
+from cell_classifier_crf.hints import merge_all_long_range_features
 
 
 def featurize_input(sheet):

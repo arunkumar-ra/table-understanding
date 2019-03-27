@@ -1,4 +1,4 @@
-from crf.edge_map import get_edge_map
+from cell_classifier_crf.edge_map import get_edge_map
 from util.string_utils import string2int, data_to_string
 import numpy as np
 

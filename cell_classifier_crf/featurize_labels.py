@@ -1,5 +1,5 @@
 import numpy as np
-from crf.feature_utils import empty_cell
+from cell_classifier_crf.feature_utils import empty_cell
 
 # Fill empty values with empty
 label_dict = {

@@ -17,7 +17,7 @@ class LoadSyntheticData:
 
         for dirpath, dirnames, filenames in os.walk(self.annotation_path):
             for fn in filenames:
-                # if len(sheet_list) > 10:
+                # if len(sheet_list) >= 2:
                 #     break
 
                 if fn.endswith(".yaml") and not fn.startswith("~"):

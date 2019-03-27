@@ -1,9 +1,9 @@
 from cell_classifier.cell_classifier import CellClassifier
 import pickle
-from crf.featurize_input import featurize_input
+from cell_classifier_crf.featurize_input import featurize_input
 import numpy as np
-from crf.edge_features import get_edge_map_and_features
-from crf.featurize_labels import inverse_dict
+from cell_classifier_crf.edge_features import get_edge_map_and_features
+from cell_classifier_crf.featurize_labels import inverse_dict
 from config import config, get_full_path
 from cell_classifier.simple_tag import SimpleTag
 from cell_classifier.tag import Tag

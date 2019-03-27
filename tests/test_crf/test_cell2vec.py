@@ -1,5 +1,5 @@
 import unittest
-from crf.cell2vec import cell2vec
+from cell_classifier_crf.cell2vec import cell2vec
 import numpy as np
 
 

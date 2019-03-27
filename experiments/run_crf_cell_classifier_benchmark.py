@@ -2,7 +2,7 @@ from benchmarks.crf_cell_classifier_benchmark import CRFCellClassifierBenchmark
 from data_loader.load_synthetic_data import LoadSyntheticData
 from cell_classifier.crf_cell_classifier import CRFCellClassifier
 import numpy as np
-from crf.featurize_labels import inverse_dict
+from cell_classifier_crf.featurize_labels import inverse_dict
 
 
 def run_crf_cell_classifier_benchmark():

@@ -1,4 +1,4 @@
-from crf.feature_utils import word_regex, alpha_regex, alphanum_regex, symbol_regex, empty_cell
+from cell_classifier_crf.feature_utils import word_regex, alpha_regex, alphanum_regex, symbol_regex, empty_cell
 
 import numpy as np
 from util.date_parser import DateParser

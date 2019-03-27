@@ -1,6 +1,6 @@
 import numpy as np
 from cell_classifier.crf_cell_classifier import CRFCellClassifier
-from crf.featurize_labels import inverse_dict, label_dict
+from cell_classifier_crf.featurize_labels import inverse_dict, label_dict
 
 
 class CRFCellClassifierBenchmark:

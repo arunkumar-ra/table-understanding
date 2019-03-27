@@ -29,19 +29,23 @@ class SimpleBlock(Block):
 
         # left, right
         if self.get_right_col() + 1 == otherBlock.get_left_col():
-            return True
+            if max(self.get_upper_row(), otherBlock.get_upper_row()) <= min(self.get_lower_row(), otherBlock.get_lower_row()):
+                return True
 
         # right, left
         if self.get_left_col() - 1 == otherBlock.get_right_col():
-            return True
+            if max(self.get_upper_row(), otherBlock.get_upper_row()) <= min(self.get_lower_row(), otherBlock.get_lower_row()):
+                return True
 
         # up, down
         if self.get_lower_row() + 1 == otherBlock.get_upper_row():
-            return True
+            if max(self.get_left_col(), otherBlock.get_left_col()) <= min(self.get_right_col(), otherBlock.get_right_col()):
+                return True
 
         # down, up
         if self.get_upper_row() - 1 == otherBlock.get_lower_row():
-            return True
+            if max(self.get_left_col(), otherBlock.get_left_col()) <= min(self.get_right_col(), otherBlock.get_right_col()):
+                return True
 
         return False
 

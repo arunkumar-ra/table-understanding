@@ -1,4 +1,4 @@
 crf:
-  model_file: crf/crf_model.pkl
+  model_file: cell_classifier_crf/crf_model.pkl
 tests:
   test1: tests/data/test.csv
