@@ -20,7 +20,7 @@ class TestFeaturizer(unittest.TestCase):
         blocks = [b1, b2, b3]
 
         featurizer = Featurize([sheet], [tags], [blocks])
-        input_features = featurizer.get_input_features()
+        input_features, _ = featurizer.get_input_features()
 
         print(input_features)
 
@@ -57,7 +57,7 @@ class TestFeaturizer(unittest.TestCase):
         blocks2 = [b2_1, b2_2, b2_3]
 
         featurizer = Featurize([sheet1, sheet2], [tags1, tags2], [blocks1, blocks2])
-        input_features = featurizer.get_input_features()
+        input_features, _ = featurizer.get_input_features()
 
         print(input_features)
 

@@ -2,7 +2,6 @@
 Experimental code. Subject to change
 """
 
-
 from layout_detector.crf.featurizer import Featurize
 from typing import List
 from pystruct.models import EdgeFeatureGraphCRF
@@ -25,7 +24,7 @@ class CRFLayoutEstimator:
 
         print("Preparing data...")
         print(len(sheetList), len(tagsList), len(blocksList), len(layoutList))
-        X_graph = np.array(featurizer.get_input_features())
+        X_graph, _ = np.array(featurizer.get_input_features())
         y_graph = np.array(featurizer.get_label_map(layoutList))
 
         ## Remove tables with only one link (Base case)

@@ -84,13 +84,9 @@ class Featurize:
             blocks = self.blocksList[k]
 
             feature_map, edge_map, edge_features = self.get_input_features_for_table(k, sheet, tags, blocks)
-
-            # print(np.array(feature_map).shape)
-            # print(np.array(edge_map).shape)
-            # print(np.array(edge_features).shape)
             X_graph.append((feature_map, edge_map, edge_features))
 
-        return X_graph
+        return X_graph, self.vertexDict
 
     def get_label_map(self, layoutList: List[LayoutGraph]):
         labelsList = []

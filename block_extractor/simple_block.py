@@ -9,6 +9,9 @@ class SimpleBlock(Block):
         self.upper_row = upper_row
         self.lower_row = lower_row
 
+    def __hash__(self):
+        return hash(str(self))
+
     def get_block_type(self):
         return self.block_type
 

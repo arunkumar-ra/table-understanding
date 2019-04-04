@@ -12,8 +12,7 @@ from typing import List
 
 class CRFCellClassifier(CellClassifier):
     def __init__(self):
-        # TODO: Use config file? or full path
-        crf_model_file = get_full_path(config['crf']['model_file'])
+        crf_model_file = get_full_path(config['crf']['cell_classifier_model_file'])
         with open(crf_model_file, 'rb') as infile:
             self.model = pickle.load(infile, encoding='latin1')  # latin1 encoding since we are reading a python2 pickle file
 
