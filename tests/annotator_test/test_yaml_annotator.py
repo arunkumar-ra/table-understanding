@@ -1,8 +1,8 @@
 import unittest
 from annotator.yaml_annotator import YAMLAnnotator
-from block_extractor.simple_block import SimpleBlock
+from type.block.simple_block import SimpleBlock
 from reader.csv_reader import CsvReader
-from layout_detector.layout_graph import LayoutGraph
+from type.layout.layout_graph import LayoutGraph
 
 class TestYAMLAnnotator(unittest.TestCase):
     def testIfCorrectAnnotationIsGenerated(self):

@@ -1,6 +1,6 @@
 from block_extractor.block_extractor import BlockExtractor
 import numpy as np
-from block_extractor.simple_block import SimpleBlock
+from type.block.simple_block import SimpleBlock
 
 from typing import List
 
@@ -35,7 +35,7 @@ class BlockExtractorBenchmark:
                     matching_blocks += 1
                     break
                 if block.get_right_col() == block2.get_right_col() and block.get_left_col() == block2.get_left_col() and\
-                    block.get_upper_row() == block2.get_upper_row() and block.get_lower_row() == block2.get_lower_row():
+                    block.get_top_row() == block2.get_top_row() and block.get_bottom_row() == block2.get_bottom_row():
                         type_mismatch += 1
                         break
 

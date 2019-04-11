@@ -1,18 +1,16 @@
 import unittest
-import numpy as np
-from cell_classifier.simple_tag import SimpleTag
-from block_extractor.simple_block import SimpleBlock
-from block_extractor import new_block_types
+from type.block.simple_block import SimpleBlock
+from type.block import block_type
 
 
 class TestSimpleBlock(unittest.TestCase):
     def testSimpleBlockFunctions(self):
 
-        b1 = SimpleBlock(new_block_types.HEADER, 0, 1, 0, 0)
-        b2 = SimpleBlock(new_block_types.ATTRIBUTE, 0, 0, 1, 3)
-        b3 = SimpleBlock(new_block_types.VALUE, 1, 1, 1, 3)
-        b4 = SimpleBlock(new_block_types.VALUE, 0, 1, 4, 4)
-        b5 = SimpleBlock(new_block_types.VALUE, 2, 3, 1, 1)
+        b1 = SimpleBlock(block_type.HEADER, 0, 1, 0, 0)
+        b2 = SimpleBlock(block_type.ATTRIBUTE, 0, 0, 1, 3)
+        b3 = SimpleBlock(block_type.VALUE, 1, 1, 1, 3)
+        b4 = SimpleBlock(block_type.VALUE, 0, 1, 4, 4)
+        b5 = SimpleBlock(block_type.VALUE, 2, 3, 1, 1)
 
         assert b1.is_adjacent(b2)
         assert b2.is_adjacent(b1)

@@ -1,9 +1,9 @@
 from annotator.abstract_annotator import AbstractAnnotator
-from block_extractor.block import Block
-from layout_detector.layout_graph import LayoutGraph
+from type.block.block import Block
+from type.layout.layout_graph import LayoutGraph
 import yaml
 from typing import List
-from block_extractor.simple_block import SimpleBlock
+from type.block.simple_block import SimpleBlock
 
 class YAMLAnnotator(AbstractAnnotator):
     def __init__(self, version=1):
@@ -23,7 +23,7 @@ class YAMLAnnotator(AbstractAnnotator):
 
     def add_layout(self, label, block):
         layout = dict()
-        layout['location'] = "{}..{}:{}..{}".format(block.get_upper_row(), block.get_lower_row(),
+        layout['location'] = "{}..{}:{}..{}".format(block.get_top_row(), block.get_bottom_row(),
                                                     block.get_left_col(), block.get_right_col())
         layout['semantic_type'] = "schema:unknown"
         self.annotation['layout'][label] = layout  # TODO: What if two blocks have the same label?

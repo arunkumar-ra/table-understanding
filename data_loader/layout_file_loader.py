@@ -1,7 +1,7 @@
 import json
 from util.excel_utils import excel_range2bbox
-from block_extractor.simple_block import SimpleBlock
-from layout_detector.layout_graph import LayoutGraph
+from type.block.simple_block import SimpleBlock
+from type.layout.layout_graph import LayoutGraph
 from typing import List
 
 

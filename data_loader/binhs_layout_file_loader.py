@@ -1,10 +1,10 @@
 import yaml
-from block_extractor.simple_block import SimpleBlock
+from type.block.simple_block import SimpleBlock
 from typing import List
-from layout_detector.layout_graph import LayoutGraph
-from cell_classifier.simple_tag import SimpleTag
+from type.layout.layout_graph import LayoutGraph
+from type.cell.cell_class import CellClass
 
-from block_extractor import new_block_types
+from type.block import block_type
 from layout_detector import edge_types
 
 import numpy as np
@@ -45,7 +45,7 @@ class BinhsLayoutFileLoader:
 
         print("Bounding box is (0, {}, 0, {})".format(max_row, max_col))
 
-        tags = np.empty((max_row+1, max_col+1), dtype=SimpleTag)
+        tags = np.empty((max_row+1, max_col+1), dtype=CellClass)
 
         for block_name in self.layout['layout']:
             location = self.layout['layout'][block_name]['location']
@@ -65,12 +65,12 @@ class BinhsLayoutFileLoader:
 
             for i in range(bottom_row - top_row + 1):
                 for j in range(right_col - left_col + 1):
-                    tags[top_row + i][left_col + j] = SimpleTag(cell_tag)
+                    tags[top_row + i][left_col + j] = CellClass(cell_tag)
 
         for i in range(max_row + 1):
             for j in range(max_col + 1):
                 if not tags[i][j]:
-                    tags[i][j] = SimpleTag("EMPTY")
+                    tags[i][j] = CellClass("EMPTY")
 
         return tags
 
@@ -84,13 +84,13 @@ class BinhsLayoutFileLoader:
         block_id = 0
         for block_name in self.layout['layout']:
             if block_name == "value":
-                block_type = new_block_types.VALUE
+                block_type = block_type.VALUE
             elif block_name == "title" or block_name == "comments":
-                block_type = new_block_types.GLOBAL_ATTRIBUTE
+                block_type = block_type.GLOBAL_ATTRIBUTE
             elif block_name == "header":
-                block_type = new_block_types.HEADER
+                block_type = block_type.HEADER
             else:
-                block_type = new_block_types.ATTRIBUTE
+                block_type = block_type.ATTRIBUTE
 
             block = self.layout['layout'][block_name]
             location = block['location']

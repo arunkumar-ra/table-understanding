@@ -15,9 +15,9 @@ class Block(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def get_upper_row(self):
+    def get_top_row(self):
         pass
 
     @abc.abstractmethod
-    def get_lower_row(self):
+    def get_bottom_row(self):
         pass

@@ -1,7 +1,8 @@
 from reader.abstract_file_reader import AbstractFileReader
 import numpy as np
 import pyexcel as pyx
-
+from reader.sheet import Sheet
+from typing import List
 
 class CsvReader(AbstractFileReader):
     def __init__(self, filename):
@@ -9,13 +10,13 @@ class CsvReader(AbstractFileReader):
         self.filename = filename
         self.wb = pyx.get_book(file_name=filename)
         
-    def get_sheets(self):
+    def get_sheets(self) -> List[Sheet]:
         for name in self.wb.to_dict():
-            sheet = self.wb[name].to_array()
-            sheet = np.array(sheet)
-            yield sheet
+            values = self.wb[name].to_array()
+            values = np.array(values)
+            yield Sheet(values, None)
     
-    def get_sheet_by_index(self, idx):
-        sheet = self.wb.sheet_by_index(idx).to_array()
-        sheet = np.array(sheet)
-        return sheet
+    def get_sheet_by_index(self, idx) -> Sheet:
+        values = self.wb.sheet_by_index(idx).to_array()
+        values = np.array(values)
+        return Sheet(values, None)

@@ -5,10 +5,9 @@ import numpy as np
 from cell_classifier_crf.edge_features import get_edge_map_and_features
 from cell_classifier_crf.featurize_labels import inverse_dict
 from config import config, get_full_path
-from cell_classifier.simple_tag import SimpleTag
-from cell_classifier.tag import Tag
+from type.cell.cell_class import CellClass
+from reader.sheet import Sheet
 from typing import List
-
 
 class CRFCellClassifier(CellClassifier):
     def __init__(self):
@@ -17,16 +16,19 @@ class CRFCellClassifier(CellClassifier):
             self.model = pickle.load(infile, encoding='latin1')  # latin1 encoding since we are reading a python2 pickle file
 
     def __predict_wrapper(self, prediction, r, c):
-        pred = np.empty((r, c), dtype=SimpleTag)
+        pred = np.empty((r, c), dtype=CellClass)
         for i in range(r):
             for j in range(c):
-                pred[i][j] = SimpleTag(inverse_dict[prediction[i * c + j]])
+                cell_class_dict = {
+                    inverse_dict[prediction[i*c + j]]: 1.0
+                }
+                pred[i][j] = CellClass(cell_class_dict)
 
         return pred
 
-    def __get_features(self, sheet: np.array):
-        x = sheet
-        x_fz = featurize_input(sheet)
+    def __get_features(self, sheet: Sheet):
+        x = sheet.values
+        x_fz = featurize_input(sheet.values)
         num_features = x_fz.shape[2]
         x_graph = (
                     (np.reshape(x_fz, (x_fz.shape[0] * x_fz.shape[1], num_features)),) +
@@ -34,10 +36,9 @@ class CRFCellClassifier(CellClassifier):
         )
         return np.array(x_graph)
 
-    def classify_cells(self, sheet: np.array) -> np.array:
+    def classify_cells(self, sheet: Sheet) -> 'np.ndarray[CellClass]':
         x_graph = self.__get_features(sheet)
-        predictions = self.model.predict([x_graph])[0]  # TODO: Direct access by index should be avoided
-        tags = self.__predict_wrapper(predictions, sheet.shape[0], sheet.shape[1])
-        # print(tags)
+        predictions = self.model.predict([x_graph])[0]  # TODO (minor): Direct access by index should be avoided
+        tags = self.__predict_wrapper(predictions, sheet.values.shape[0], sheet.values.shape[1])
 
         return tags

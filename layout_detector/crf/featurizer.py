@@ -3,10 +3,10 @@ Experimental code. Subject to change
 """
 
 
-from block_extractor.simple_block import SimpleBlock
-from block_extractor.new_block_types import block_map
+from type.block.simple_block import SimpleBlock
+# from block_extractor.new_block_types import block_map
 from typing import List
-from layout_detector.layout_graph import LayoutGraph
+from type.layout.layout_graph import LayoutGraph
 from layout_detector.crf import label_space
 
 import numpy as np

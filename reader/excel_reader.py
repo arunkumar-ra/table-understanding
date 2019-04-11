@@ -4,6 +4,8 @@ import xlrd
 import logging
 import numpy as np
 import pyexcel as pyx
+from reader.sheet import Sheet
+from typing import List
 
 
 class ExcelReader(AbstractFileReader):
@@ -13,18 +15,18 @@ class ExcelReader(AbstractFileReader):
         self.wb = pyx.get_book(file_name=filename)
         self.wb_xlrd = xlrd.open_workbook(filename)
 
-    def get_sheets(self):
+    def get_sheets(self) -> List[Sheet]:
         for name in self.wb.to_dict():
-            sheet = self.wb[name].to_array()
-            sheet = np.array(sheet)
-            self.fill_merged_cells(sheet, self.wb_xlrd.sheet_by_name(name).merged_cells)
-            yield sheet
+            values = self.wb[name].to_array()
+            values = np.array(values)
+            self.fill_merged_cells(values, self.wb_xlrd.sheet_by_name(name).merged_cells)
+            yield Sheet(values, None)
 
-    def get_sheet_by_index(self, idx):
-        sheet = self.wb.sheet_by_index(idx).to_array()
-        sheet = np.array(sheet)
-        self.fill_merged_cells(sheet, self.wb_xlrd.sheet_by_index(idx).merged_cells)
-        return sheet
+    def get_sheet_by_index(self, idx) -> Sheet:
+        values = self.wb.sheet_by_index(idx).to_array()
+        values = np.array(values)
+        self.fill_merged_cells(values, self.wb_xlrd.sheet_by_index(idx).merged_cells)
+        return Sheet(values, None)
         
     # filling the empty cells which are located in the merged cells in reality but are read as empty by pyexcel
     def fill_merged_cells(self, sheet, merged_blocks):

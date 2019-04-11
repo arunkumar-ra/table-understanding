@@ -1,36 +1,48 @@
 import numpy as np
 from block_extractor.block_extractor import BlockExtractor
-from block_extractor.simple_block import SimpleBlock
+from type.block.simple_block import SimpleBlock
 from typing import List
-from block_extractor import new_block_types
+from type.block import block_type
+
+from reader.sheet import Sheet
+from type.cell.cell_class import CellClass
+from type.block.block_class import BlockClass
+from type.cell import cell_type
 
 """
 This block extractor extracts blocks from cell classifications.
 Block Types is defined in block_extractor.new_block_types
 """
 
-old_type_to_new_type_map = {
-    "_DATA_": new_block_types.VALUE,
-    "DATE": new_block_types.ATTRIBUTE,
-    "EMPTY": new_block_types.EMPTY,
-    "META": new_block_types.ATTRIBUTE
+cell_type_to_block_type_map = {
+    cell_type.DATA: block_type.VALUE,
+    cell_type.DATE: block_type.ATTRIBUTE,
+    cell_type.EMPTY: block_type.EMPTY,
+    cell_type.META: block_type.ATTRIBUTE
 }
 
+
 class BlockExtractorV2(BlockExtractor):
-    def merge_row_left_to_right(self, row_id, row, tags):
+    def __init__(self):
+        pass
+
+    def merge_row_left_to_right(self, row_id, row, tags: List[CellClass]):
         curr_block_start = 0
         row_blocks = []
         for i in range(1, len(row)):
-            if tags[i] != tags[i-1]:
-                row_blocks.append(SimpleBlock(tags[i-1].get_tags(), curr_block_start, i-1, row_id, row_id))
+            if tags[i].get_best_class() != tags[i-1].get_best_class():
+                # Appending a tuple (CellType, SimpleBlock), since block type is undetermined at this point
+                row_blocks.append((tags[i-1].get_best_class(),
+                                   SimpleBlock(None, curr_block_start, i - 1, row_id, row_id)))
                 curr_block_start = i
 
         cols = len(row)
-        row_blocks.append(SimpleBlock(tags[cols-1].get_tags(), curr_block_start, cols-1, row_id, row_id))
+        row_blocks.append((tags[cols-1].get_best_class(),
+                          SimpleBlock(None, curr_block_start, cols - 1, row_id, row_id)))
         return row_blocks
 
-    def merge_sheet_left_to_right(self, sheet, tags) -> List:
-        row_blocks = [self.merge_row_left_to_right(row_id, row, row_tags) for row_id, (row, row_tags) in enumerate(zip(sheet, tags))]
+    def merge_sheet_left_to_right(self, sheet: Sheet, tags: 'np.array[CellClass]') -> List:
+        row_blocks = [self.merge_row_left_to_right(row_id, row, row_tags) for row_id, (row, row_tags) in enumerate(zip(sheet.values, tags))]
         return row_blocks
 
     def merge_sheet_top_to_bottom(self, row_blocks: List) -> List:
@@ -42,23 +54,26 @@ class BlockExtractorV2(BlockExtractor):
             j, k = 0, 0
             new_up = []
             while j < len(up) and k < len(down):
-                if up[j].get_left_col() == down[k].get_left_col() and up[j].get_right_col() == down[k].get_right_col()\
-                        and up[j].get_block_type() == down[k].get_block_type():
+                if up[j][1].get_left_col() == down[k][1].get_left_col()\
+                        and up[j][1].get_right_col() == down[k][1].get_right_col()\
+                        and up[j][0] == down[k][0]:  # Same block type
                     # Merge two blocks
-                    new_up.append(SimpleBlock(up[j].get_block_type(), up[j].get_left_col(), up[j].get_right_col(),
-                                              up[j].get_upper_row(), down[k].get_lower_row()))
+                    new_up.append((
+                        up[j][0],
+                        SimpleBlock(None, up[j][1].get_left_col(), up[j][1].get_right_col(), up[j][1].get_top_row(),
+                                    down[k][1].get_bottom_row())))
                     j += 1
                     k += 1
 
-                elif up[j].get_right_col() < down[k].get_right_col():
+                elif up[j][1].get_right_col() < down[k][1].get_right_col():
                     blocks.append(up[j])
                     j += 1
 
-                elif down[k].get_right_col() < up[j].get_right_col():
+                elif down[k][1].get_right_col() < up[j][1].get_right_col():
                     new_up.append(down[k])
                     k += 1
 
-                elif up[j].get_right_col() == down[k].get_right_col():
+                elif up[j][1].get_right_col() == down[k][1].get_right_col():
                     blocks.append(up[j])
                     new_up.append(down[k])
                     j += 1
@@ -71,46 +86,44 @@ class BlockExtractorV2(BlockExtractor):
     """
     Hard coded logic
     """
-    def extract_blocks(self, sheet: np.array, tags: np.array) -> List[SimpleBlock]:
+    def extract_blocks(self, sheet: Sheet, tags: 'np.array[CellClass]') -> List[SimpleBlock]:
         row_blocks = self.merge_sheet_left_to_right(sheet, tags)
         blocks = self.merge_sheet_top_to_bottom(row_blocks)
 
         new_blocks = []
         # Remove empty blocks
-        for block in blocks:
-            if block.get_block_type() != "EMPTY":
-                new_blocks.append(block)
+        for _type, block in blocks:
+            if _type != "EMPTY":
+                new_blocks.append((_type, block))
 
         blocks = new_blocks
 
         # Convert old block types to new block types
         new_blocks = []
-        for block in blocks:
-            old_type = block.get_block_type()
-            new_type = old_type_to_new_type_map[old_type]
-
-            if new_type == new_block_types.EMPTY:
+        for old_type, block in blocks:
+            new_type = cell_type_to_block_type_map[old_type]
+            if new_type == block_type.EMPTY:
                 continue
 
             # Attribute can be global, non-global or headers
-            if new_type == new_block_types.ATTRIBUTE:
+            if new_type == block_type.ATTRIBUTE:
                 adjacent_block_found = False
-                for block2 in blocks:
+                for _, block2 in blocks:
                     if block != block2 and block.is_adjacent(block2):
                         adjacent_block_found = True
                         break
                 if not adjacent_block_found:
-                    new_type = new_block_types.GLOBAL_ATTRIBUTE
+                    new_type = block_type.GLOBAL_ATTRIBUTE
                 else:
                     # TODO: Block size should not be the only indicator for classifying a block as header
-                    block_size = (block.get_right_col() - block.get_left_col() + 1) * (block.get_lower_row() - block.get_upper_row() + 1)
+                    block_size = (block.get_right_col() - block.get_left_col() + 1) * (block.get_bottom_row() - block.get_top_row() + 1)
                     if block_size <= 5:
-                        new_type = new_block_types.HEADER
+                        new_type = block_type.HEADER
                     else:
-                        new_type = new_block_types.ATTRIBUTE ## same as before
+                        new_type = block_type.ATTRIBUTE ## same as before
 
-            new_blocks.append(SimpleBlock(new_type,
+            new_blocks.append(SimpleBlock(BlockClass({new_type: 1.0}),
                                           block.get_left_col(), block.get_right_col(),
-                                          block.get_upper_row(), block.get_lower_row())
+                                          block.get_top_row(), block.get_bottom_row())
                               )
         return new_blocks

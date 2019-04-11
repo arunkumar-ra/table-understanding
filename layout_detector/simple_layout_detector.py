@@ -1,6 +1,6 @@
 from layout_detector.layout_detector import LayoutDetector
-from layout_detector.layout_graph import LayoutGraph
-from block_extractor import block_types
+from type.layout.layout_graph import LayoutGraph
+from type.cell import cell_type
 
 # """
 # Assigns each DATA block to nearest META and DATE blocks as long as they are aligned.
@@ -15,9 +15,9 @@ class SimpleLayoutDetector(LayoutDetector):
         n = set()
         vertex = blocks[idx]
 
-        if vertex.get_block_type() == block_types.DATA:
+        if vertex.get_block_type() == cell_type.DATA:
             for idx, block in enumerate(blocks):
-                if block.get_block_type() == block_types.DATE or block.get_block_type() == block_types.META:
+                if block.get_block_type() == cell_type.DATE or block.get_block_type() == cell_type.META:
                     n.add(idx)
 
         return n

@@ -1,6 +1,6 @@
 import numpy as np
 from block_extractor.block_extractor import BlockExtractor
-from block_extractor.simple_block import SimpleBlock
+from type.block.simple_block import SimpleBlock
 from typing import List
 
 # Region Algebra : http://www.cs.cmu.edu/~rcm/papers/thesis/ch4.pdf
@@ -14,17 +14,18 @@ under Definition 4.
 """
 
 
+@DeprecationWarning
 class SimpleBlockExtractor(BlockExtractor):
     def merge_row_left_to_right(self, row_id, row, tags):
         curr_block_start = 0
         row_blocks = []
         for i in range(1, len(row)):
             if tags[i] != tags[i-1]:
-                row_blocks.append(SimpleBlock(tags[i-1].get_tags(), curr_block_start, i-1, row_id, row_id))
+                row_blocks.append(SimpleBlock(tags[i-1].get_best_class(), curr_block_start, i - 1, row_id, row_id))
                 curr_block_start = i
 
         cols = len(row)
-        row_blocks.append(SimpleBlock(tags[cols-1].get_tags(), curr_block_start, cols-1, row_id, row_id))
+        row_blocks.append(SimpleBlock(tags[cols-1].get_best_class(), curr_block_start, cols - 1, row_id, row_id))
         return row_blocks
 
     def merge_sheet_left_to_right(self, sheet, tags) -> List:
@@ -46,7 +47,7 @@ class SimpleBlockExtractor(BlockExtractor):
                         and up[j].get_block_type() == down[k].get_block_type():
                     # Merge two blocks
                     new_up.append(SimpleBlock(up[j].get_block_type(), up[j].get_left_col(), up[j].get_right_col(),
-                                              up[j].get_upper_row(), down[k].get_lower_row()))
+                                              up[j].get_top_row(), down[k].get_bottom_row()))
                     j += 1
                     k += 1
 

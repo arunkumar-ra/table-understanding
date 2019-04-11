@@ -5,7 +5,7 @@ import pickle
 from config import config, get_full_path
 
 from layout_detector.crf import label_space
-from layout_detector.layout_graph import LayoutGraph
+from type.layout.layout_graph import LayoutGraph
 
 
 class CRFLayoutDetector(LayoutDetector):

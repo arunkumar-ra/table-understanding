@@ -1,8 +1,8 @@
 import unittest
 import numpy as np
-from cell_classifier.simple_tag import SimpleTag
-from block_extractor.simple_block import SimpleBlock
-from layout_detector.layout_graph import LayoutGraph
+from type.cell.cell_class import CellClass
+from type.block.simple_block import SimpleBlock
+from type.layout.layout_graph import LayoutGraph
 from layout_detector.crf.estimator import CRFLayoutEstimator
 
 class TestCRFEstimator(unittest.TestCase):
@@ -11,8 +11,8 @@ class TestCRFEstimator(unittest.TestCase):
 
         # Table 1
         sheet1 = np.array([['date', 'value'], ['2001', '10.0'], ['2002', '11.0'], ['2003', '12.0']])
-        tags1 = np.array([[SimpleTag('META'), SimpleTag('META')], [SimpleTag('DATE'), SimpleTag('_DATA_')],
-                                  [SimpleTag('DATE'), SimpleTag('_DATA_')], [SimpleTag('DATE'), SimpleTag('_DATA_')]])
+        tags1 = np.array([[CellClass('META'), CellClass('META')], [CellClass('DATE'), CellClass('_DATA_')],
+                          [CellClass('DATE'), CellClass('_DATA_')], [CellClass('DATE'), CellClass('_DATA_')]])
         b1_1 = SimpleBlock("META", 0, 1, 0, 0)
         b1_2 = SimpleBlock("DATE", 0, 0, 1, 3)
         b1_3 = SimpleBlock("_DATA_", 1, 1, 1, 3)
@@ -20,8 +20,8 @@ class TestCRFEstimator(unittest.TestCase):
 
         # Table 2
         sheet2 = np.array([['date', 'value'], ['10.0', '2001'], ['11.0', '2002'], ['12.0', '2003']])
-        tags2 = np.array([[SimpleTag('META'), SimpleTag('META')], [SimpleTag('_DATA_'), SimpleTag('DATE')],
-                          [SimpleTag('_DATA_'), SimpleTag('DATE')], [SimpleTag('_DATA_'), SimpleTag('DATE')]])
+        tags2 = np.array([[CellClass('META'), CellClass('META')], [CellClass('_DATA_'), CellClass('DATE')],
+                          [CellClass('_DATA_'), CellClass('DATE')], [CellClass('_DATA_'), CellClass('DATE')]])
         b2_1 = SimpleBlock("META", 0, 1, 0, 0)
         b2_2 = SimpleBlock("_DATA_", 0, 0, 1, 3)
         b2_3 = SimpleBlock("DATE", 1, 1, 1, 3)

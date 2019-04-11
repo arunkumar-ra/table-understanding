@@ -1,13 +1,18 @@
-from block_extractor.block import Block
+from type.block.block import Block
+from type.block.block_class import BlockClass
 
 
 class SimpleBlock(Block):
-    def __init__(self, block_type, left_col, right_col, upper_row, lower_row):
+    def __init__(self, block_type: BlockClass, left_col, right_col, top_row, bottom_row):
         self.block_type = block_type
         self.left_col = left_col
         self.right_col = right_col
-        self.upper_row = upper_row
-        self.lower_row = lower_row
+        self.upper_row = top_row
+        self.lower_row = bottom_row
+
+        # Support for nested blocks
+        self.children = []
+        self.parent = None
 
     def __hash__(self):
         return hash(str(self))
@@ -21,32 +26,44 @@ class SimpleBlock(Block):
     def get_right_col(self):
         return self.right_col
 
-    def get_upper_row(self):
+    def get_top_row(self):
         return self.upper_row
 
-    def get_lower_row(self):
+    def get_bottom_row(self):
         return self.lower_row
+
+    def add_child(self, child_block):
+        assert isinstance(child_block, self.__class__)
+        assert child_block.parent is None
+
+        self.children.append(child_block)
+        child_block.parent = self
+
+    # Note: Call either add_parent or add_child, not both for the same pair of blocks
+    def add_parent(self, block):
+        assert isinstance(block, self.__class__)
+        block.add_child(self)
 
     def is_adjacent(self, otherBlock):
         assert isinstance(otherBlock, self.__class__)
 
         # left, right
         if self.get_right_col() + 1 == otherBlock.get_left_col():
-            if max(self.get_upper_row(), otherBlock.get_upper_row()) <= min(self.get_lower_row(), otherBlock.get_lower_row()):
+            if max(self.get_top_row(), otherBlock.get_top_row()) <= min(self.get_bottom_row(), otherBlock.get_bottom_row()):
                 return True
 
         # right, left
         if self.get_left_col() - 1 == otherBlock.get_right_col():
-            if max(self.get_upper_row(), otherBlock.get_upper_row()) <= min(self.get_lower_row(), otherBlock.get_lower_row()):
+            if max(self.get_top_row(), otherBlock.get_top_row()) <= min(self.get_bottom_row(), otherBlock.get_bottom_row()):
                 return True
 
         # up, down
-        if self.get_lower_row() + 1 == otherBlock.get_upper_row():
+        if self.get_bottom_row() + 1 == otherBlock.get_top_row():
             if max(self.get_left_col(), otherBlock.get_left_col()) <= min(self.get_right_col(), otherBlock.get_right_col()):
                 return True
 
         # down, up
-        if self.get_upper_row() - 1 == otherBlock.get_lower_row():
+        if self.get_top_row() - 1 == otherBlock.get_bottom_row():
             if max(self.get_left_col(), otherBlock.get_left_col()) <= min(self.get_right_col(), otherBlock.get_right_col()):
                 return True
 
@@ -64,11 +81,11 @@ class SimpleBlock(Block):
             return True
 
         # up, down
-        if otherBlock.get_upper_row() >= self.get_lower_row() + 1 and otherBlock.get_upper_row() <= self.get_lower_row() + max_dist:
+        if otherBlock.get_top_row() >= self.get_bottom_row() + 1 and otherBlock.get_top_row() <= self.get_bottom_row() + max_dist:
             return True
 
         # down, up
-        if otherBlock.get_lower_row() >= self.get_upper_row() - max_dist and otherBlock.get_lower_row() <= self.get_upper_row() - 1:
+        if otherBlock.get_bottom_row() >= self.get_top_row() - max_dist and otherBlock.get_bottom_row() <= self.get_top_row() - 1:
             return True
 
         return False
@@ -76,9 +93,9 @@ class SimpleBlock(Block):
     def are_blocks_horizontal(self, otherBlock):
         assert isinstance(otherBlock, self.__class__)
 
-        if otherBlock.get_upper_row() != self.get_upper_row():
+        if otherBlock.get_top_row() != self.get_top_row():
             return False
-        if otherBlock.get_lower_row() != self.get_lower_row():
+        if otherBlock.get_bottom_row() != self.get_bottom_row():
             return False
 
         return True
@@ -92,6 +109,20 @@ class SimpleBlock(Block):
             return False
 
         return True
+
+    def get_intersecting_area(self, otherBlock):
+        assert isinstance(otherBlock, self.__class__)
+        x_overlap = max(0,
+                        min(otherBlock.get_right_col(), self.get_right_col()) -
+                        max(otherBlock.get_left_col(), self.get_left_col()) + 1
+                        )
+
+        y_overlap = max(0,
+                        min(otherBlock.get_bottom_row(), self.get_bottom_row()) -
+                        max(otherBlock.get_top_row(), self.get_top_row()) + 1
+                        )
+
+        return x_overlap * y_overlap
 
     def __eq__(self, other):  # For testing
         if isinstance(other, self.__class__):

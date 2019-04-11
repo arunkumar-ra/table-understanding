@@ -1,6 +1,6 @@
 from annotator.yaml_annotator import YAMLAnnotator
 from cell_classifier.crf_cell_classifier import CRFCellClassifier
-from block_extractor.block_extractor_v2 import BlockExtractorV2
+from block_extractor.block_extractor_decision_tree import BlockExtractorDecisionTree
 from layout_detector.crf.crf_layout_detector import CRFLayoutDetector
 
 from cell_classifier.cell_classifier import CellClassifier
@@ -28,6 +28,8 @@ class EndToEnd:
         for sheet in reader.get_sheets():
             tags = self.cell_classifier.classify_cells(sheet)
             blocks = self.block_extractor.extract_blocks(sheet, tags)
+            print(blocks[0])
+            exit(0)
             if len(blocks) < 20:  ## Arbitrary number.
                 layout = self.layout_detector.detect_layout(sheet, tags, blocks)
             else:
@@ -50,6 +52,9 @@ You can create different functions for different combinations of classifiers
 """
 def v1():
     # file = "/Users/work/Downloads/FAOSTAT_commodity.csv"
+    file = "/Users/work/Downloads/FAOSTAT_commodity_test.csv"
+    # file = "/Users/work/Downloads/FAOSTAT_crop_yields.csv"
+
     # file = "/Users/work/Projects/table-understanding/datamart_dataset/census/2007-11_ACS_Migration_Profile_In_Movers.xlsx"
     # Good results, "Population" should be a separate block, which is not found by the current block extractor
     # file = "/Users/work/Projects/table-understanding/datamart_dataset/census/Web_ACS2017_Educ.xlsx"
@@ -63,10 +68,12 @@ def v1():
 
     # file = "/Users/work/Projects/elicit_alignment_OLD/m9/datasets/orig/structured/power_generation_q2_2017/example/Power Generation Q2 2017.xlsx"
 
-    file = "/Users/work/Projects/table-understanding/datamart_dataset/census/P1_County_1yr_interim.xlsx"
+    # file = "/Users/work/Projects/table-understanding/datamart_dataset/census/P1_County_1yr_interim.xlsx"
 
     cell_classifier = CRFCellClassifier()
-    block_extractor = BlockExtractorV2()
+    block_extractor = BlockExtractorDecisionTree()
+
+    # TODO: Layout detector does not work for 1 block?s
     layout_detector = CRFLayoutDetector()
 
     etoe = EndToEnd(file, cell_classifier, block_extractor, layout_detector)

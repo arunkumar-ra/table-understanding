@@ -1,4 +1,4 @@
-from block_extractor.simple_block import SimpleBlock
+from type.block.simple_block import SimpleBlock
 from typing import List
 
 
