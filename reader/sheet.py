@@ -3,8 +3,8 @@ import numpy as np
 
 """    
     Sheet:
-        - np.array of cell values
-        - dict/feature vector of cell format for each cell
+        -values: np.array of cell values
+        -meta: dict/feature vector of cell format for each cell
 """
 
 

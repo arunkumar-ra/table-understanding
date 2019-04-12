@@ -5,7 +5,7 @@ import numpy as np
 from cell_classifier_crf.edge_features import get_edge_map_and_features
 from cell_classifier_crf.featurize_labels import inverse_dict
 from config import config, get_full_path
-from type.cell.cell_class import CellClass
+from type.cell.cell_type_pmf import CellTypePMF
 from reader.sheet import Sheet
 from typing import List
 
@@ -16,13 +16,13 @@ class CRFCellClassifier(CellClassifier):
             self.model = pickle.load(infile, encoding='latin1')  # latin1 encoding since we are reading a python2 pickle file
 
     def __predict_wrapper(self, prediction, r, c):
-        pred = np.empty((r, c), dtype=CellClass)
+        pred = np.empty((r, c), dtype=CellTypePMF)
         for i in range(r):
             for j in range(c):
                 cell_class_dict = {
                     inverse_dict[prediction[i*c + j]]: 1.0
                 }
-                pred[i][j] = CellClass(cell_class_dict)
+                pred[i][j] = CellTypePMF(cell_class_dict)
 
         return pred
 
@@ -36,7 +36,7 @@ class CRFCellClassifier(CellClassifier):
         )
         return np.array(x_graph)
 
-    def classify_cells(self, sheet: Sheet) -> 'np.ndarray[CellClass]':
+    def classify_cells(self, sheet: Sheet) -> 'np.ndarray[CellTypePMF]':
         x_graph = self.__get_features(sheet)
         predictions = self.model.predict([x_graph])[0]  # TODO (minor): Direct access by index should be avoided
         tags = self.__predict_wrapper(predictions, sheet.values.shape[0], sheet.values.shape[1])

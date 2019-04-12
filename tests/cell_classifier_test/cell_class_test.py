@@ -1,5 +1,5 @@
 import unittest
-from type.cell.cell_class import CellClass
+from type.cell.cell_type_pmf import CellTypePMF
 
 
 class TestCellClass(unittest.TestCase):
@@ -9,7 +9,7 @@ class TestCellClass(unittest.TestCase):
             "META": 0.49
         }
 
-        c1 = CellClass(cell_class_dict)
+        c1 = CellTypePMF(cell_class_dict)
 
-        assert c1.get_best_class() == "_DATA_"
-        assert c1.get_classes() == cell_class_dict
+        assert c1.get_best_type() == "_DATA_"
+        assert c1.get_types() == cell_class_dict

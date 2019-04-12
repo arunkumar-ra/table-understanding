@@ -1,9 +1,9 @@
 from type.block.block import Block
-from type.block.block_class import BlockClass
+from type.block.block_type_pmf import BlockTypePMF
 
 
 class SimpleBlock(Block):
-    def __init__(self, block_type: BlockClass, left_col, right_col, top_row, bottom_row):
+    def __init__(self, block_type: BlockTypePMF, left_col, right_col, top_row, bottom_row):
         self.block_type = block_type
         self.left_col = left_col
         self.right_col = right_col
@@ -131,4 +131,4 @@ class SimpleBlock(Block):
             return False
 
     def __str__(self):
-        return "[ {} : ({},{}) to ({},{}) ]".format(self.block_type, self.upper_row, self.left_col, self.lower_row, self.right_col)
+        return "[ {} : ({},{}) to ({},{}) ]".format(self.block_type.get_best_type().str(), self.upper_row, self.left_col, self.lower_row, self.right_col)

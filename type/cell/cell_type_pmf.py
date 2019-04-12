@@ -1,19 +1,14 @@
-from type.block.block_type import BlockType
-from type.block import block_type
+from type.cell.cell_type import CellType
 
-
-"""
-Probability distribution of different block types
-"""
-class BlockClass:
+class CellTypePMF:
     def __init__(self, classes: dict):
         self.classes = classes
 
-    def get_classes(self) -> dict:
+    def get_types(self) -> dict:
         return self.classes
 
-    def get_best_class(self) -> BlockType:
-        best_class = None
+    def get_best_type(self) -> CellType:  # TODO: Should we return string or something else?
+        best_class = ""
         best_prob = 0.0
 
         for k in self.classes:
@@ -31,7 +26,3 @@ class BlockClass:
 
     def __repr__(self):
         return self.classes.__repr__()
-
-# Few predefined classes
-# EMPTY_CLASS = BlockClass({block_type.EMPTY: 1})
-# ATTRIBUTE_CLASS

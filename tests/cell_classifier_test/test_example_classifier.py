@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 from cell_classifier.example_cell_classifier import ExampleCellClassifier
-from type.cell.cell_class import CellClass
+from type.cell.cell_type_pmf import CellTypePMF
 from reader.sheet import Sheet
 from type.cell import cell_type
 
@@ -16,10 +16,10 @@ class TestExampleClassifier(unittest.TestCase):
         print(tags)
 
         expected_tags = np.array([
-                                    [CellClass({cell_type.EMPTY: 1}), CellClass({cell_type.EMPTY: 1})],
-                                    [CellClass({cell_type.EMPTY: 1}), CellClass({cell_type.EMPTY: 1})],
-                                    [CellClass({cell_type.EMPTY: 1}), CellClass({cell_type.EMPTY: 1})],
-                                    [CellClass({cell_type.EMPTY: 1}), CellClass({cell_type.EMPTY: 1})]
+                                    [CellTypePMF({cell_type.EMPTY: 1}), CellTypePMF({cell_type.EMPTY: 1})],
+                                    [CellTypePMF({cell_type.EMPTY: 1}), CellTypePMF({cell_type.EMPTY: 1})],
+                                    [CellTypePMF({cell_type.EMPTY: 1}), CellTypePMF({cell_type.EMPTY: 1})],
+                                    [CellTypePMF({cell_type.EMPTY: 1}), CellTypePMF({cell_type.EMPTY: 1})]
                                 ])
 
         assert np.array_equal(tags, expected_tags)

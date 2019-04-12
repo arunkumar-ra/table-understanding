@@ -1,22 +1,13 @@
-edge_labels = {
-    'null': 0,
-    'header': 1,
-    'attribute': 2,
-    'global_attribute': 3,
-    'supercategory': 4
-}
+from type.layout import edge_type
 
+# TODO: NEED tight coupling from labels to inverse dict
 inv_edge_labels = {
-    0: 'null',
-    1: 'header',
-    2: 'attribute',
-    3: 'global_attribute',
-    4: 'supercategory'
+    0: edge_type.NULL,
+    1: edge_type.HEADER,
+    2: edge_type.ATTRIBUTE,
+    3: edge_type.GLOBAL_ATTRIBUTE,
+    4: edge_type.SUPERCATEGORY
 }
-
-label_list = [
-    'null', 'header', 'attribute', 'global_attribute', 'supercategory'
-]
 
 label_keys = [
     0, 1, 2, 3, 4

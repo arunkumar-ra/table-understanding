@@ -57,7 +57,7 @@ class YAMLAnnotator(AbstractAnnotator):
                 self.add_mapping(block_labels[layout.nodes[vertex_1]], layout.nodes[vertex_1],
                                  block_labels[layout.nodes[vertex_2]], layout.nodes[vertex_2])
 
-    def get_annotation(self, sheet_index, sheet, tags, blocks: List[Block], layout: LayoutGraph) -> dict:
+    def get_annotation(self, sheet_index, sheet, tags, blocks: List[SimpleBlock], layout: LayoutGraph) -> dict:
         # self.write_yaml(self.annotation, "test.yaml")
 
         block_labels = dict()
@@ -66,7 +66,7 @@ class YAMLAnnotator(AbstractAnnotator):
         if blocks:
             for block in blocks:
 
-                block_type = block.get_block_type()
+                block_type = block.get_block_type().get_best_type()
                 if block_type in label_count:
                     label_num = label_count[block_type]
                     label_count[block_type] += 1
@@ -74,7 +74,7 @@ class YAMLAnnotator(AbstractAnnotator):
                     label_num = 0
                     label_count[block_type] = 1
 
-                block_labels[block] = block.get_block_type() + str(label_num)
+                block_labels[block] = block_type.str() + str(label_num)
                 self.add_layout(block_labels[block], block)
 
         self.add_mappings(layout, block_labels)

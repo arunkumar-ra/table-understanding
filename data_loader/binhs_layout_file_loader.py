@@ -2,11 +2,11 @@ import yaml
 from type.block.simple_block import SimpleBlock
 from typing import List
 from type.layout.layout_graph import LayoutGraph
-from type.cell.cell_class import CellClass
-
+from type.cell.cell_type_pmf import CellTypePMF
+from type.cell import cell_type
+from type.layout import edge_type
 from type.block import block_type
-from layout_detector import edge_types
-
+from type.block.block_type_pmf import BlockTypePMF
 import numpy as np
 
 """
@@ -45,7 +45,7 @@ class BinhsLayoutFileLoader:
 
         print("Bounding box is (0, {}, 0, {})".format(max_row, max_col))
 
-        tags = np.empty((max_row+1, max_col+1), dtype=CellClass)
+        tags = np.empty((max_row+1, max_col+1), dtype=CellTypePMF)
 
         for block_name in self.layout['layout']:
             location = self.layout['layout'][block_name]['location']
@@ -57,20 +57,20 @@ class BinhsLayoutFileLoader:
             left_col, right_col = int(left_col), int(right_col)
 
             if block_name == "year" or block_name == "month" or block_name == "day" or block_name == "date":
-                cell_tag = "DATE"
+                cell_tag = cell_type.DATE
             elif block_name == "value":  # Might need to add more block names here from chiraag and apoorva's annotations
-                cell_tag = "_DATA_"
+                cell_tag = cell_type.DATA
             else:
-                cell_tag = "META"
+                cell_tag = cell_type.META
 
             for i in range(bottom_row - top_row + 1):
                 for j in range(right_col - left_col + 1):
-                    tags[top_row + i][left_col + j] = CellClass(cell_tag)
+                    tags[top_row + i][left_col + j] = CellTypePMF({cell_tag: 1})
 
         for i in range(max_row + 1):
             for j in range(max_col + 1):
                 if not tags[i][j]:
-                    tags[i][j] = CellClass("EMPTY")
+                    tags[i][j] = CellTypePMF({cell_type.EMPTY: 1})
 
         return tags
 
@@ -84,13 +84,13 @@ class BinhsLayoutFileLoader:
         block_id = 0
         for block_name in self.layout['layout']:
             if block_name == "value":
-                block_type = block_type.VALUE
+                _type = block_type.VALUE
             elif block_name == "title" or block_name == "comments":
-                block_type = block_type.GLOBAL_ATTRIBUTE
+                _type = block_type.GLOBAL_ATTRIBUTE
             elif block_name == "header":
-                block_type = block_type.HEADER
+                _type = block_type.HEADER
             else:
-                block_type = block_type.ATTRIBUTE
+                _type = block_type.ATTRIBUTE
 
             block = self.layout['layout'][block_name]
             location = block['location']
@@ -99,7 +99,7 @@ class BinhsLayoutFileLoader:
             top_row, bottom_row = row_range.split("..")
             left_col, right_col = col_range.split("..")
 
-            block_list.append(SimpleBlock(block_type, int(left_col), int(right_col), int(top_row), int(bottom_row)))
+            block_list.append(SimpleBlock(BlockTypePMF({_type: 1}), int(left_col), int(right_col), int(top_row), int(bottom_row)))
             self.block_idx[block_name] = block_id
             block_id += 1
 
@@ -120,13 +120,13 @@ class BinhsLayoutFileLoader:
             _to = _to.split(":")[0].strip()
 
             if _from == "header":
-                edge_type = edge_types.HEADER
+                _type = edge_type.HEADER
             elif _from == "title" or _from == "comments":
-                edge_type = edge_types.GLOBAL_ATTRIBUTE
+                _type = edge_type.GLOBAL_ATTRIBUTE
             else:
-                edge_type = edge_types.ATTRIBUTE
+                _type = edge_type.ATTRIBUTE
 
-            layout.add_edge(edge_type, self.block_idx[_from], self.block_idx[_to])
+            layout.add_edge(_type, self.block_idx[_from], self.block_idx[_to])
 
         return layout
 

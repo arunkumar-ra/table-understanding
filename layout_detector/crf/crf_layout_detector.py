@@ -6,7 +6,12 @@ from config import config, get_full_path
 
 from layout_detector.crf import label_space
 from type.layout.layout_graph import LayoutGraph
-
+from reader.sheet import Sheet
+from type.cell.cell_type_pmf import CellTypePMF
+from typing import List
+from type.block.simple_block import SimpleBlock
+from type.block import block_type
+from type.layout import edge_type
 
 class CRFLayoutDetector(LayoutDetector):
     def __init__(self):
@@ -14,7 +19,7 @@ class CRFLayoutDetector(LayoutDetector):
         with open(layout_model_file, 'rb') as infile:
             self.model = pickle.load(infile)
 
-    def detect_layout(self, sheet, tags, blocks) -> LayoutGraph:
+    def detect_layout(self, sheet: Sheet, tags: 'np.array[CellTypePMF]', blocks: List[SimpleBlock]) -> LayoutGraph:
         featurizer = Featurize([sheet], [tags], [blocks])
         X_graph, vertex_dict = np.array(featurizer.get_input_features())
         layout_prediction = self.model.predict(X_graph)[0]

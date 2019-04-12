@@ -5,7 +5,7 @@ from type.block.simple_block import SimpleBlock
 from typing import List
 from queue import Queue
 from reader.sheet import Sheet
-from type.cell.cell_class import CellClass
+from type.cell.cell_type_pmf import CellTypePMF
 from type.cell.cell_type import CellType
 from typing import Tuple
 
@@ -80,7 +80,7 @@ class BlockExtractorDecisionTree(BlockExtractor):
             p1 = b1_size / (b1_size + b2_size)
 
             entropy_after_split = p1 * entropy1 + (1 - p1) * entropy2
-            print(base_entropy - entropy_after_split)
+            # print(base_entropy - entropy_after_split)
 
             if entropy_after_split < best_split_entropy:
                 best_split = b1, b2
@@ -88,12 +88,13 @@ class BlockExtractorDecisionTree(BlockExtractor):
 
         information_gain = base_entropy - best_split_entropy
 
+        print("Split from {} to {}, {} with inf gain".format(block, best_split[0], best_split[1]), information_gain)
         return best_split, information_gain
 
     def get_splits(self, block: SimpleBlock, row_h, col_h):
 
         for row in row_h:
-            if row-1 < block.get_top_row() or row > block.get_bottom_row():
+            if row-1 < block.get_top_row() or row >= block.get_bottom_row():
                 continue
             b1 = SimpleBlock(None, block.get_left_col(), block.get_right_col(), block.get_top_row(), row)
             b2 = SimpleBlock(None, block.get_left_col(), block.get_right_col(), row + 1, block.get_bottom_row())
@@ -101,7 +102,7 @@ class BlockExtractorDecisionTree(BlockExtractor):
             yield b1, b2
 
         for col in col_h:
-            if col-1 < block.get_left_col() or col > block.get_right_col():
+            if col-1 < block.get_left_col() or col >= block.get_right_col():
                 continue
             b1 = SimpleBlock(None, block.get_left_col(), col, block.get_top_row(), block.get_bottom_row())
             b2 = SimpleBlock(None, col + 1, block.get_right_col(), block.get_top_row(), block.get_bottom_row())
@@ -110,7 +111,7 @@ class BlockExtractorDecisionTree(BlockExtractor):
 
 
     # TODO: How to return a tree instead of a list
-    def extract_blocks(self, sheet: Sheet, tags: 'np.array[CellClass]') -> List[SimpleBlock]:
+    def extract_blocks(self, sheet: Sheet, tags: 'np.array[CellTypePMF]') -> List[SimpleBlock]:
         # Get simple set of blocks from block extractor v2
         bev2 = BlockExtractorV2()
         row_blocks = bev2.merge_sheet_left_to_right(sheet, tags)

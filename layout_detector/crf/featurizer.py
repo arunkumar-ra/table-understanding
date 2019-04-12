@@ -8,9 +8,12 @@ from type.block.simple_block import SimpleBlock
 from typing import List
 from type.layout.layout_graph import LayoutGraph
 from layout_detector.crf import label_space
-
+from typing import List
+from reader.sheet import Sheet
 import numpy as np
+from type.layout.edge_type import EdgeType
 
+from type.block.block_type import BlockType
 class Featurize:
     def __init__(self, sheetList: List, tagsList: List, blocksList: List):
         self.sheetList = sheetList
@@ -18,7 +21,8 @@ class Featurize:
         self.blocksList = blocksList
         self.vertexDict = dict()
 
-    def get_input_features_for_table(self, table_num, sheet, tags, blocks):
+    def get_input_features_for_table(self, table_num, sheet: Sheet, tags: 'np.array[CellClass]',
+                                     blocks: List[SimpleBlock]):
 
         edge_map = []
         edge_features = []
@@ -103,9 +107,9 @@ class Featurize:
 
             for j in range(len(layout.outEdges)):
                 v1 = j
-                for type, v2 in layout.outEdges[v1]:
+                for _type, v2 in layout.outEdges[v1]:
                     vertex_num = vertexDict[(v1, v2)]
-                    labelsList[i][vertex_num] = label_space.edge_labels[type]
+                    labelsList[i][vertex_num] = _type.id()
                     # print("({}, {}) is assigned type: {}".format(v1, v2, type))
 
             # print(labelsList[i])
@@ -117,12 +121,12 @@ class Featurize:
         features = []
 
         # Add block 1 type
-        features.extend([0] * len(block_map))
-        features[block_map[block1.get_block_type()]] = 1
+        features.extend([0] * BlockType.max_id())
+        features[block1.get_block_type().get_best_type().id()] = 1
 
         # Add block 2 type
-        features.extend([0] * len(block_map))
-        features[block_map[block2.get_block_type()] + len(block_map)] = 1
+        features.extend([0] * BlockType.max_id())
+        features[block2.get_block_type().get_best_type().id() + BlockType.max_id()] = 1
 
         # Are 2 blocks adjacent
         features.append(block1.is_adjacent(block2))

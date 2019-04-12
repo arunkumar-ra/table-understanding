@@ -1,6 +1,6 @@
 import unittest
 import numpy as np
-from type.cell.cell_class import CellClass
+from type.cell.cell_type_pmf import CellTypePMF
 from block_extractor.block_extractor_decision_tree import BlockExtractorDecisionTree
 from reader.file_reader import get_file_reader
 
@@ -13,13 +13,13 @@ class TestDtreeExtractor(unittest.TestCase):
         sheet = f_reader.get_sheet_by_index(0)
         print(sheet.values.shape)
 
-        tags = np.empty(sheet.values.shape, dtype=CellClass)
+        tags = np.empty(sheet.values.shape, dtype=CellTypePMF)
         row, col = sheet.values.shape
         for i in range(row):
             for j in range(col):
-                tags[i][j] = CellClass({sheet.values[i][j]: 1})
+                tags[i][j] = CellTypePMF({sheet.values[i][j]: 1})
 
-        block_extractor = BlockExtractorDecisionTree(0.45)
+        block_extractor = BlockExtractorDecisionTree(0.05)
         # TODO: Try .20 decision threshold
         blocks = block_extractor.extract_blocks(sheet, tags)
 

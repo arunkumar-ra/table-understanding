@@ -34,7 +34,7 @@ def evaluate_on_test_set():
     reg_params = [0.03]
     sheet_list, tags_list, block_list, layout_list = lsd.load_files()
 
-    crf_estimator = CRFLayoutEstimator(C_range=reg_params, eval_against_test=False)
+    crf_estimator = CRFLayoutEstimator(C_range=reg_params, eval_against_test=True)
     crf_estimator.set_input(sheet_list, tags_list, block_list, layout_list)
     crf_model = crf_estimator.fit_crf()
     print("_________________")

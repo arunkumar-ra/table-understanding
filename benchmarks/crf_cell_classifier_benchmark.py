@@ -21,8 +21,8 @@ class CRFCellClassifierBenchmark:
         gold = self.gold.reshape(-1)
 
         for x, y in zip(tags, gold):
-            label_pred = x.get_best_class()
-            label_gold = y.get_best_class()
+            label_pred = x.get_best_type()
+            label_gold = y.get_best_type()
 
             confusion_matrix[label_dict[label_pred]][label_dict[label_gold]] += 1
 

@@ -2,7 +2,7 @@
 from annotator.yaml_annotator import YAMLAnnotator
 from cell_classifier.crf_cell_classifier import CRFCellClassifier
 from block_extractor.simple_block_extractor import SimpleBlockExtractor
-from layout_detector.simple_layout_detector import SimpleLayoutDetector
+from layout_detector.example_layout_detector import ExampleLayoutDetector
 from reader.file_reader import get_file_reader
 
 
@@ -17,7 +17,7 @@ def main():
 
     cell_classifier = CRFCellClassifier()
     block_extractor = SimpleBlockExtractor()
-    layout_detector = SimpleLayoutDetector()
+    layout_detector = ExampleLayoutDetector()
     annotator = YAMLAnnotator()
 
     reader = get_file_reader(file)

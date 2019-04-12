@@ -7,7 +7,7 @@ from typing import List
 from pystruct.models import EdgeFeatureGraphCRF
 from pystruct.learners import OneSlackSSVM
 from sklearn.metrics import confusion_matrix, f1_score, accuracy_score, precision_recall_fscore_support
-from layout_detector.crf.label_space import edge_labels, inv_edge_labels, label_list, label_keys
+from layout_detector.crf.label_space import label_keys
 import numpy as np
 from sklearn.model_selection import train_test_split
 

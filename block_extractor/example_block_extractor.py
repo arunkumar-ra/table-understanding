@@ -8,18 +8,17 @@ from block_extractor.block_extractor import BlockExtractor
 from type.block.simple_block import SimpleBlock
 from typing import List
 from reader.sheet import Sheet
-from type.cell.cell_class import CellClass
-from type.block.block_class import BlockClass
-from type.block.block_type import BlockType
+from type.cell.cell_type_pmf import CellTypePMF
+from type.block.block_type_pmf import BlockTypePMF
 from type.block import block_type
 
 
 class ExampleBlockExtractor(BlockExtractor):
-    def extract_blocks(self, sheet: Sheet, tags: 'np.array[CellClass]') -> List[SimpleBlock]:
+    def extract_blocks(self, sheet: Sheet, tags: 'np.array[CellTypePMF]') -> List[SimpleBlock]:
         blocks = []
 
         # Probability distribution of block type
-        bc = BlockClass(
+        bc = BlockTypePMF(
             {
                 block_type.ATTRIBUTE: 0.9,
                 block_type.HEADER: 0.1,

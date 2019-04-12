@@ -21,11 +21,11 @@ class SimpleBlockExtractor(BlockExtractor):
         row_blocks = []
         for i in range(1, len(row)):
             if tags[i] != tags[i-1]:
-                row_blocks.append(SimpleBlock(tags[i-1].get_best_class(), curr_block_start, i - 1, row_id, row_id))
+                row_blocks.append(SimpleBlock(tags[i-1].get_best_type(), curr_block_start, i - 1, row_id, row_id))
                 curr_block_start = i
 
         cols = len(row)
-        row_blocks.append(SimpleBlock(tags[cols-1].get_best_class(), curr_block_start, cols - 1, row_id, row_id))
+        row_blocks.append(SimpleBlock(tags[cols-1].get_best_type(), curr_block_start, cols - 1, row_id, row_id))
         return row_blocks
 
     def merge_sheet_left_to_right(self, sheet, tags) -> List:

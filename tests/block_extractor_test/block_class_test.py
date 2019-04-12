@@ -1,6 +1,6 @@
 import unittest
 from type.block import block_type
-from type.block.block_class import BlockClass
+from type.block.block_type_pmf import BlockTypePMF
 
 
 class TestBlockClass(unittest.TestCase):
@@ -11,6 +11,6 @@ class TestBlockClass(unittest.TestCase):
             block_type.ATTRIBUTE: 0.1
         }
 
-        bc = BlockClass(block_dict)
-        assert bc.get_classes() == block_dict
-        assert bc.get_best_class() == block_type.EMPTY
+        bc = BlockTypePMF(block_dict)
+        assert bc.get_types() == block_dict
+        assert bc.get_best_type() == block_type.EMPTY

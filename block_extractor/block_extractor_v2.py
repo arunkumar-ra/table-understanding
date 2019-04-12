@@ -5,8 +5,8 @@ from typing import List
 from type.block import block_type
 
 from reader.sheet import Sheet
-from type.cell.cell_class import CellClass
-from type.block.block_class import BlockClass
+from type.cell.cell_type_pmf import CellTypePMF
+from type.block.block_type_pmf import BlockTypePMF
 from type.cell import cell_type
 
 """
@@ -26,22 +26,22 @@ class BlockExtractorV2(BlockExtractor):
     def __init__(self):
         pass
 
-    def merge_row_left_to_right(self, row_id, row, tags: List[CellClass]):
+    def merge_row_left_to_right(self, row_id, row, tags: List[CellTypePMF]):
         curr_block_start = 0
         row_blocks = []
         for i in range(1, len(row)):
-            if tags[i].get_best_class() != tags[i-1].get_best_class():
+            if tags[i].get_best_type() != tags[i - 1].get_best_type():
                 # Appending a tuple (CellType, SimpleBlock), since block type is undetermined at this point
-                row_blocks.append((tags[i-1].get_best_class(),
+                row_blocks.append((tags[i-1].get_best_type(),
                                    SimpleBlock(None, curr_block_start, i - 1, row_id, row_id)))
                 curr_block_start = i
 
         cols = len(row)
-        row_blocks.append((tags[cols-1].get_best_class(),
+        row_blocks.append((tags[cols-1].get_best_type(),
                           SimpleBlock(None, curr_block_start, cols - 1, row_id, row_id)))
         return row_blocks
 
-    def merge_sheet_left_to_right(self, sheet: Sheet, tags: 'np.array[CellClass]') -> List:
+    def merge_sheet_left_to_right(self, sheet: Sheet, tags: 'np.array[CellTypePMF]') -> List:
         row_blocks = [self.merge_row_left_to_right(row_id, row, row_tags) for row_id, (row, row_tags) in enumerate(zip(sheet.values, tags))]
         return row_blocks
 
@@ -86,7 +86,7 @@ class BlockExtractorV2(BlockExtractor):
     """
     Hard coded logic
     """
-    def extract_blocks(self, sheet: Sheet, tags: 'np.array[CellClass]') -> List[SimpleBlock]:
+    def extract_blocks(self, sheet: Sheet, tags: 'np.array[CellTypePMF]') -> List[SimpleBlock]:
         row_blocks = self.merge_sheet_left_to_right(sheet, tags)
         blocks = self.merge_sheet_top_to_bottom(row_blocks)
 
@@ -122,7 +122,7 @@ class BlockExtractorV2(BlockExtractor):
                     else:
                         new_type = block_type.ATTRIBUTE ## same as before
 
-            new_blocks.append(SimpleBlock(BlockClass({new_type: 1.0}),
+            new_blocks.append(SimpleBlock(BlockTypePMF({new_type: 1.0}),
                                           block.get_left_col(), block.get_right_col(),
                                           block.get_top_row(), block.get_bottom_row())
                               )
