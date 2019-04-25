@@ -25,6 +25,12 @@ class ExampleBlockExtractor(BlockExtractor):
                 # block_type.EMPTY: 0
             }
         )
+        
+        # bc = BlockTypePMF(
+        #     {
+        #         BasicBlockType.VALUE: 1.0
+        #     }
+        # )
 
         row, col = sheet.values.shape
         new_block = SimpleBlock(bc, 0, col-1, 0, row-1)

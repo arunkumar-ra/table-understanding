@@ -4,9 +4,18 @@ If you need different edge types, please create your own class. Do not change th
 """
 class BasicEdgeType:
     NULL = EdgeType("null", 0)
+    # FROM BLOCK -> TO BLOCK
+    # HEADER_BLOCK -> ATTRIBUTE_BLOCK
+    # HEADER_BLOCK -> GLOBAL_ATTRIBUTE_BLOCK
     HEADER = EdgeType("header", 1)
+    # FROM BLOCK -> TO BLOCK
+    # ATTRIBUTE_BLOCK -> VALUE_BLOCK
     ATTRIBUTE = EdgeType("attribute", 2)
+    # FROM BLOCK -> TO BLOCK
+    # GLOBAL_ATTRIBUTE_BLOCK -> VALUE_BLOCK
     GLOBAL_ATTRIBUTE = EdgeType("global_attribute", 3)
+    # FROM BLOCK -> TO BLOCK
+    # ATTRIBUTE_BLOCK -> ATTRIBUTE_BLOCK
     SUPERCATEGORY = EdgeType("supercategory", 4)
 
     str_to_edge_type = {

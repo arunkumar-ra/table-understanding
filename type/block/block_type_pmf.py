@@ -9,6 +9,7 @@ class BlockTypePMF:
     def __init__(self, classes: dict):
         self.classes = classes
 
+    # TODO: Enforce dict key type
     def get_types(self) -> dict:
         return self.classes
 

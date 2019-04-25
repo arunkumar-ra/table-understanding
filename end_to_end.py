@@ -1,6 +1,5 @@
 from annotator.yaml_annotator import YAMLAnnotator
 from cell_classifier.crf_cell_classifier import CRFCellClassifier
-from block_extractor.block_extractor_decision_tree import BlockExtractorDecisionTree
 from block_extractor.block_extractor_v2 import BlockExtractorV2
 from layout_detector.crf.crf_layout_detector import CRFLayoutDetector
 

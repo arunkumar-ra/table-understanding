@@ -7,7 +7,7 @@ from typing import List
 from type.block.simple_block import SimpleBlock
 from type.block import block_type
 import numpy as np
-from type.layout import edge_type
+from type.layout.basic_edge_type import BasicEdgeType
 
 # """
 # Assigns each DATA block to nearest META and DATE blocks as long as they are aligned.
@@ -39,6 +39,6 @@ class ExampleLayoutDetector(LayoutDetector):
             neighbor_set = self.neighbors(i, blocks)
             for vertex in neighbor_set:
                 print("Edge created from {} to {}".format(vertex, i))
-                layout_graph.add_edge(edge_type.ATTRIBUTE, vertex, i)
+                layout_graph.add_edge(BasicEdgeType.ATTRIBUTE, vertex, i)
 
         return layout_graph

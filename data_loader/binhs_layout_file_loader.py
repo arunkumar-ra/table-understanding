@@ -4,8 +4,8 @@ from typing import List
 from type.layout.layout_graph import LayoutGraph
 from type.cell.cell_type_pmf import CellTypePMF
 from type.cell import cell_type
-from type.layout import edge_type
-from type.block import block_type
+from type.layout.basic_edge_type import BasicEdgeType
+from type.block.basic_block_type import BasicBlockType
 from type.block.block_type_pmf import BlockTypePMF
 import numpy as np
 
@@ -84,13 +84,13 @@ class BinhsLayoutFileLoader:
         block_id = 0
         for block_name in self.layout['layout']:
             if block_name == "value":
-                _type = block_type.VALUE
+                _type = BasicBlockType.VALUE
             elif block_name == "title" or block_name == "comments":
-                _type = block_type.GLOBAL_ATTRIBUTE
+                _type = BasicBlockType.GLOBAL_ATTRIBUTE
             elif block_name == "header":
-                _type = block_type.HEADER
+                _type = BasicBlockType.HEADER
             else:
-                _type = block_type.ATTRIBUTE
+                _type = BasicBlockType.ATTRIBUTE
 
             block = self.layout['layout'][block_name]
             location = block['location']
@@ -120,11 +120,11 @@ class BinhsLayoutFileLoader:
             _to = _to.split(":")[0].strip()
 
             if _from == "header":
-                _type = edge_type.HEADER
+                _type = BasicEdgeType.HEADER
             elif _from == "title" or _from == "comments":
-                _type = edge_type.GLOBAL_ATTRIBUTE
+                _type = BasicEdgeType.GLOBAL_ATTRIBUTE
             else:
-                _type = edge_type.ATTRIBUTE
+                _type = BasicEdgeType.ATTRIBUTE
 
             layout.add_edge(_type, self.block_idx[_from], self.block_idx[_to])
 

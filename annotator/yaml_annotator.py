@@ -5,6 +5,7 @@ import yaml
 from typing import List
 from type.block.simple_block import SimpleBlock
 
+
 class YAMLAnnotator(AbstractAnnotator):
     def __init__(self, version=1):
         self.annotation = dict()
