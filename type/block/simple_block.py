@@ -131,4 +131,6 @@ class SimpleBlock(Block):
             return False
 
     def __str__(self):
-        return "[ {} : ({},{}) to ({},{}) ]".format(self.block_type.get_best_type().str(), self.upper_row, self.left_col, self.lower_row, self.right_col)
+        block_type = self.block_type.get_best_type().str() if self.block_type else None
+
+        return "[ {} : ({},{}) to ({},{}) ]".format(block_type, self.upper_row, self.left_col, self.lower_row, self.right_col)

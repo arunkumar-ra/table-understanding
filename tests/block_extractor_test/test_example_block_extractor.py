@@ -6,7 +6,7 @@ from type.cell.cell_type_pmf import CellTypePMF
 from type.cell import cell_type
 from block_extractor.example_block_extractor import ExampleBlockExtractor
 from type.block.block_type_pmf import BlockTypePMF
-from type.block import block_type
+from type.block.basic_block_type import BasicBlockType
 
 
 class TestExampleBlockExtractor(unittest.TestCase):
@@ -25,8 +25,8 @@ class TestExampleBlockExtractor(unittest.TestCase):
         # Order of blocks in the list shouldn't actually matter. Write a better test to compare without any known order
         bc = BlockTypePMF(
             {
-                block_type.ATTRIBUTE: 0.9,
-                block_type.HEADER: 0.1,
+                BasicBlockType.ATTRIBUTE: 0.9,
+                BasicBlockType.HEADER: 0.1,
                 # block_type.EMPTY: 0
             }
         )

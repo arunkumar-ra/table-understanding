@@ -67,7 +67,8 @@ def v1():
 
     # file = "/Users/work/Projects/elicit_alignment_OLD/m9/datasets/orig/structured/power_generation_q2_2017/example/Power Generation Q2 2017.xlsx"
 
-    file = "/Users/work/Projects/table-understanding/datamart_dataset/census/P1_County_1yr_interim.xlsx"
+    # file = "/Users/work/Projects/table-understanding/datamart_dataset/census/P1_County_1yr_interim.xlsx"
+    file = "/Users/work/Downloads/alabama.xlsx"
 
     cell_classifier = CRFCellClassifier()
     block_extractor = BlockExtractorV2()

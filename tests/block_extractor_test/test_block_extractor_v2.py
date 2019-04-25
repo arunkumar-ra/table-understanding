@@ -3,7 +3,7 @@ import numpy as np
 from block_extractor.block_extractor_v2 import BlockExtractorV2
 from type.cell.cell_type_pmf import CellTypePMF
 from type.block.simple_block import SimpleBlock
-from type.block import block_type
+from type.block.basic_block_type import BasicBlockType
 from type.block.block_type_pmf import BlockTypePMF
 from type.cell import cell_type
 from reader.sheet import Sheet
@@ -21,8 +21,8 @@ class TestBlockExtractorV2(unittest.TestCase):
 
         sbe = BlockExtractorV2()
         blocks = sbe.extract_blocks(sheet, tags)
-        HEADER = BlockTypePMF({block_type.HEADER: 1.0})
-        VALUE = BlockTypePMF({block_type.VALUE: 1.0})
+        HEADER = BlockTypePMF({BasicBlockType.HEADER: 1.0})
+        VALUE = BlockTypePMF({BasicBlockType.VALUE: 1.0})
 
         for block in blocks:
             print(block)

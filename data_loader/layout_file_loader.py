@@ -3,9 +3,10 @@ from util.excel_utils import excel_range2bbox
 from type.block.simple_block import SimpleBlock
 from type.layout.layout_graph import LayoutGraph
 from typing import List
-from type.block.block_type import str_to_block_type_map
+from type.block.basic_block_type import BasicBlockType
+from type.layout.basic_edge_type import BasicEdgeType
 from type.block.block_type_pmf import BlockTypePMF
-from type.layout.edge_type import str_to_edge_type_map
+
 
 class LayoutFileLoader:
     def __init__(self, layout_file):
@@ -44,7 +45,7 @@ class LayoutFileLoader:
             block_range, b_type = blocks[block_id].split("-")
             block_class = BlockTypePMF(
                 {
-                    str_to_block_type_map[b_type + "_block"]: 1
+                    BasicBlockType.str_to_block_type[b_type + "_block"]: 1
                 }
             )
             top_row, left_col, bottom_row, right_col = excel_range2bbox(block_range)
@@ -62,7 +63,7 @@ class LayoutFileLoader:
             edge_list = edges[vertex_left]
             for edge in edge_list:
                 edge_type, vertex_right = edge.split(":")
-                edge_type = str_to_edge_type_map[edge_type]
+                edge_type = BasicEdgeType.str_to_edge_type[edge_type]
                 layout.add_edge(edge_type, int(vertex_left)-1, int(vertex_right)-1)
 
         return layout

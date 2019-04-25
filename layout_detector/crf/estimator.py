@@ -7,7 +7,7 @@ from typing import List
 from pystruct.models import EdgeFeatureGraphCRF
 from pystruct.learners import OneSlackSSVM
 from sklearn.metrics import confusion_matrix, f1_score, accuracy_score, precision_recall_fscore_support
-from layout_detector.crf.label_space import label_keys
+from type.layout.basic_edge_type import BasicEdgeType
 import numpy as np
 from sklearn.model_selection import train_test_split
 
@@ -82,7 +82,7 @@ class CRFLayoutEstimator:
 
         print("Precision, Recall, F-Score, Support")
         print(precision_recall_fscore_support(full_list_of_ytrue, full_list_of_predictions))
-        print("F1 Score: ", f1_score(full_list_of_ytrue, full_list_of_predictions, average=None, labels=label_keys))
+        print("F1 Score: ", f1_score(full_list_of_ytrue, full_list_of_predictions, average=None, labels=BasicEdgeType.label_keys))
 
     def fit_crf(self):
         for C in self.C_range:

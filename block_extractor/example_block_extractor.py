@@ -10,7 +10,7 @@ from typing import List
 from reader.sheet import Sheet
 from type.cell.cell_type_pmf import CellTypePMF
 from type.block.block_type_pmf import BlockTypePMF
-from type.block import block_type
+from type.block.basic_block_type import BasicBlockType
 
 
 class ExampleBlockExtractor(BlockExtractor):
@@ -20,8 +20,8 @@ class ExampleBlockExtractor(BlockExtractor):
         # Probability distribution of block type
         bc = BlockTypePMF(
             {
-                block_type.ATTRIBUTE: 0.9,
-                block_type.HEADER: 0.1,
+                BasicBlockType.ATTRIBUTE: 0.9,
+                BasicBlockType.HEADER: 0.1,
                 # block_type.EMPTY: 0
             }
         )

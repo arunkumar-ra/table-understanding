@@ -19,7 +19,7 @@ class TestDtreeExtractor(unittest.TestCase):
             for j in range(col):
                 tags[i][j] = CellTypePMF({sheet.values[i][j]: 1})
 
-        block_extractor = BlockExtractorDecisionTree(0.05)
+        block_extractor = BlockExtractorDecisionTree(0.40)
         # TODO: Try .20 decision threshold
         blocks = block_extractor.extract_blocks(sheet, tags)
 
@@ -27,7 +27,7 @@ class TestDtreeExtractor(unittest.TestCase):
             print(block)
 
         #TODO: Write a proper test
-        ## Expected blocks:
+        ## Expected blocks: for threshold: 0.40
         # [(0,0) to (22,2)]
         # [(6,3) to (22,9)]
         # [(0,3) to (2,9)]

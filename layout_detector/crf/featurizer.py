@@ -5,9 +5,9 @@ Experimental code. Subject to change
 
 from type.block.simple_block import SimpleBlock
 # from block_extractor.new_block_types import block_map
+from type.block.basic_block_type import BasicBlockType
 from typing import List
 from type.layout.layout_graph import LayoutGraph
-from layout_detector.crf import label_space
 from typing import List
 from reader.sheet import Sheet
 import numpy as np
@@ -121,12 +121,12 @@ class Featurize:
         features = []
 
         # Add block 1 type
-        features.extend([0] * BlockType.max_id())
+        features.extend([0] * BasicBlockType.block_type_count())
         features[block1.get_block_type().get_best_type().id()] = 1
 
         # Add block 2 type
-        features.extend([0] * BlockType.max_id())
-        features[block2.get_block_type().get_best_type().id() + BlockType.max_id()] = 1
+        features.extend([0] * BasicBlockType.block_type_count())
+        features[block2.get_block_type().get_best_type().id() + BasicBlockType.block_type_count()] = 1
 
         # Are 2 blocks adjacent
         features.append(block1.is_adjacent(block2))

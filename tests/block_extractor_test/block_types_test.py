@@ -8,4 +8,3 @@ class TestNewBlockTypes(unittest.TestCase):
 
         assert EMPTY.id() == 100
         assert EMPTY.str() == "empty_block"
-        assert BlockType.max_id() == 100

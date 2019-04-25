@@ -6,7 +6,7 @@ from reader.sheet import Sheet
 from type.cell.cell_type_pmf import CellTypePMF
 from type.cell import cell_type
 from type.block.block_type_pmf import BlockTypePMF
-from type.block import block_type
+from type.block.basic_block_type import BasicBlockType
 
 
 @DeprecationWarning
@@ -25,7 +25,7 @@ class TestSimpleBlockExtractor(unittest.TestCase):
         # Order of blocks in the list shouldn't actually matter. Write a better test to compare without any known order
         meta = BlockTypePMF(
             {
-                block_type.ATTRIBUTE: 1.0,
+                BasicBlockType.ATTRIBUTE: 1.0,
             }
         )
 

@@ -2,7 +2,7 @@ import numpy as np
 from block_extractor.block_extractor import BlockExtractor
 from type.block.simple_block import SimpleBlock
 from typing import List
-from type.block import block_type
+from type.block.basic_block_type import BasicBlockType
 
 from reader.sheet import Sheet
 from type.cell.cell_type_pmf import CellTypePMF
@@ -15,10 +15,10 @@ Block Types is defined in block_extractor.new_block_types
 """
 
 cell_type_to_block_type_map = {
-    cell_type.DATA: block_type.VALUE,
-    cell_type.DATE: block_type.ATTRIBUTE,
-    cell_type.EMPTY: block_type.EMPTY,
-    cell_type.META: block_type.ATTRIBUTE
+    cell_type.DATA: BasicBlockType.VALUE,
+    cell_type.DATE: BasicBlockType.ATTRIBUTE,
+    cell_type.EMPTY: BasicBlockType.EMPTY,
+    cell_type.META: BasicBlockType.ATTRIBUTE
 }
 
 
@@ -102,25 +102,25 @@ class BlockExtractorV2(BlockExtractor):
         new_blocks = []
         for old_type, block in blocks:
             new_type = cell_type_to_block_type_map[old_type]
-            if new_type == block_type.EMPTY:
+            if new_type == BasicBlockType.EMPTY:
                 continue
 
             # Attribute can be global, non-global or headers
-            if new_type == block_type.ATTRIBUTE:
+            if new_type == BasicBlockType.ATTRIBUTE:
                 adjacent_block_found = False
                 for _, block2 in blocks:
                     if block != block2 and block.is_adjacent(block2):
                         adjacent_block_found = True
                         break
                 if not adjacent_block_found:
-                    new_type = block_type.GLOBAL_ATTRIBUTE
+                    new_type = BasicBlockType.GLOBAL_ATTRIBUTE
                 else:
                     # TODO: Block size should not be the only indicator for classifying a block as header
                     block_size = (block.get_right_col() - block.get_left_col() + 1) * (block.get_bottom_row() - block.get_top_row() + 1)
                     if block_size <= 5:
-                        new_type = block_type.HEADER
+                        new_type = BasicBlockType.HEADER
                     else:
-                        new_type = block_type.ATTRIBUTE ## same as before
+                        new_type = BasicBlockType.ATTRIBUTE ## same as before
 
             new_blocks.append(SimpleBlock(BlockTypePMF({new_type: 1.0}),
                                           block.get_left_col(), block.get_right_col(),
