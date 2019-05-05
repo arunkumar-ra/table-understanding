@@ -11,6 +11,7 @@ class TestSimpleBlock(unittest.TestCase):
         b3 = SimpleBlock(BasicBlockType.VALUE, 1, 1, 1, 3)
         b4 = SimpleBlock(BasicBlockType.VALUE, 0, 1, 4, 4)
         b5 = SimpleBlock(BasicBlockType.VALUE, 2, 3, 1, 1)
+        b6 = SimpleBlock(BasicBlockType.EMPTY, 0, 1, 1, 1)
 
         assert b1.is_adjacent(b2)
         assert b2.is_adjacent(b1)
@@ -18,7 +19,12 @@ class TestSimpleBlock(unittest.TestCase):
         assert b3.is_adjacent(b2)
         assert b1.is_adjacent(b3)
         assert b3.is_adjacent(b1)
+        assert b1.is_above(b6)
+
+        assert not b2.is_above(b3)
+        assert not b3.is_above(b2)
         assert not b1.is_adjacent(b4)
         assert not b4.is_adjacent(b1)
         assert not b1.is_adjacent(b5)
         assert not b5.is_adjacent(b1)
+

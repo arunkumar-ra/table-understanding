@@ -7,17 +7,17 @@ from type.cell.cell_type_pmf import CellTypePMF
 from type.cell import cell_type
 from type.block.block_type_pmf import BlockTypePMF
 from type.block.basic_block_type import BasicBlockType
-
+from type.cell.basic_cell_type import BasicCellType
 
 @DeprecationWarning
 class TestSimpleBlockExtractor(unittest.TestCase):
     def testBlockExtractorForSimpleTableWithTwoColumns(self):
         values = np.array([['date', 'value'], ['2001', '10.0'], ['2002', '11.0'], ['2003', '12.0']])
         sheet = Sheet(values, None)
-        tags = np.array([[CellTypePMF({cell_type.META: 1}), CellTypePMF({cell_type.META: 1})],
-                         [CellTypePMF({cell_type.DATE: 1}), CellTypePMF({cell_type.DATA: 1})],
-                         [CellTypePMF({cell_type.DATE: 1}), CellTypePMF({cell_type.DATA: 1})],
-                         [CellTypePMF({cell_type.DATE: 1}), CellTypePMF({cell_type.DATA: 1})]])
+        tags = np.array([[CellTypePMF({BasicCellType.META: 1}), CellTypePMF({BasicCellType.META: 1})],
+                         [CellTypePMF({BasicCellType.DATE: 1}), CellTypePMF({BasicCellType.DATA: 1})],
+                         [CellTypePMF({BasicCellType.DATE: 1}), CellTypePMF({BasicCellType.DATA: 1})],
+                         [CellTypePMF({BasicCellType.DATE: 1}), CellTypePMF({BasicCellType.DATA: 1})]])
 
         sbe = SimpleBlockExtractor()
         blocks = sbe.extract_blocks(sheet, tags)

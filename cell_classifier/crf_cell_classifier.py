@@ -3,11 +3,13 @@ import pickle
 from cell_classifier_crf.featurize_input import featurize_input
 import numpy as np
 from cell_classifier_crf.edge_features import get_edge_map_and_features
-from cell_classifier_crf.featurize_labels import inverse_dict
+from type.cell.basic_cell_type import BasicCellType
 from config import config, get_full_path
 from type.cell.cell_type_pmf import CellTypePMF
 from reader.sheet import Sheet
 from typing import List
+
+from cell_classifier_crf.featurize_labels import inverse_dict
 
 class CRFCellClassifier(CellClassifier):
     def __init__(self):

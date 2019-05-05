@@ -7,7 +7,10 @@ from queue import Queue
 from reader.sheet import Sheet
 from type.cell.cell_type_pmf import CellTypePMF
 from type.cell.cell_type import CellType
+from type.cell.basic_cell_type import BasicCellType
 from typing import Tuple
+
+from block_extractor.block_post_processor import postprocess
 
 """
 Use a decision tree based approach to split the group of cells in to different groups.
@@ -29,12 +32,11 @@ class BlockExtractorDecisionTree(BlockExtractor):
         for _, block in blocks:
             row_h.add(block.get_top_row() - 1)
             row_h.add(block.get_bottom_row())
-            col_h.add(block.get_left_col()-1)
+            col_h.add(block.get_left_col() - 1)
             col_h.add(block.get_right_col())
 
         return row_h, col_h
 
-    # TODO: Test this function
     def get_cell_distribution_of_split(self, split_block, maximal_blocks: List[Tuple[CellType, SimpleBlock]]) -> dict:
         block_dist = dict()
         for _type, block in maximal_blocks:
@@ -64,23 +66,51 @@ class BlockExtractorDecisionTree(BlockExtractor):
                 entropy -= p * np.log2(p)
         return entropy
 
+    def get_weighted_entropy(self, block: SimpleBlock, block_dist) -> float:
+        # Weights are hyperparameters
+
+        weights = {
+            BasicCellType.EMPTY: 0.5,
+            BasicCellType.DATA: 1,
+            BasicCellType.DATE: 1,
+            BasicCellType.META: 1
+        }
+
+        entropy = 0.0
+        # block_size = self.get_block_size(block)
+
+        # Adjusted block size based on weights
+        block_size = 0
+        for cell_type in block_dist:
+            block_size += block_dist[cell_type] * weights[cell_type]
+
+        if block_size != 0:
+            for cell_type in block_dist:
+                if block_dist[cell_type] != 0:
+                    p = block_dist[cell_type] * weights[cell_type] / block_size
+                    if p != 0:
+                        entropy -= p * np.log2(p)
+        return entropy
+
     def get_best_split(self, block: SimpleBlock, maximal_blocks: List[Tuple[CellType, SimpleBlock]], row_h, col_h):
 
         best_split = None, None
         best_split_entropy = 100
 
-        base_entropy = self.get_entropy(block, self.get_cell_distribution_of_split(block, maximal_blocks))
+        base_entropy = self.get_weighted_entropy(block, self.get_cell_distribution_of_split(block, maximal_blocks))
 
         for b1, b2 in self.get_splits(block, row_h, col_h):
-            entropy1 = self.get_entropy(b1, self.get_cell_distribution_of_split(b1, maximal_blocks))
-            entropy2 = self.get_entropy(b2, self.get_cell_distribution_of_split(b2, maximal_blocks))
+            entropy1 = self.get_weighted_entropy(b1, self.get_cell_distribution_of_split(b1, maximal_blocks))
+            entropy2 = self.get_weighted_entropy(b2, self.get_cell_distribution_of_split(b2, maximal_blocks))
             b1_size = self.get_block_size(b1)
             b2_size = self.get_block_size(b2)
 
+            # p1 = (np.log2(b1_size) + 1) / (np.log2(b1_size) + np.log2(b2_size) + 2)
             p1 = b1_size / (b1_size + b2_size)
-
             entropy_after_split = p1 * entropy1 + (1 - p1) * entropy2
-            # print(base_entropy - entropy_after_split)
+
+            print("\tCandidate split from {} to {}, {} with inf gain".format(block, b1, b2),
+                  base_entropy - entropy_after_split)
 
             if entropy_after_split < best_split_entropy:
                 best_split = b1, b2
@@ -88,26 +118,27 @@ class BlockExtractorDecisionTree(BlockExtractor):
 
         information_gain = base_entropy - best_split_entropy
 
-        print("Split from {} to {}, {} with inf gain".format(block, best_split[0], best_split[1]), information_gain)
+        print("Split from {} to {}, {} with inf gain {} \n-----xx-----".format(block, best_split[0], best_split[1],
+                                                                               information_gain))
         return best_split, information_gain
 
     def get_splits(self, block: SimpleBlock, row_h, col_h):
 
         for row in row_h:
-            if row-1 < block.get_top_row() or row >= block.get_bottom_row():
-                continue
-            b1 = SimpleBlock(None, block.get_left_col(), block.get_right_col(), block.get_top_row(), row)
-            b2 = SimpleBlock(None, block.get_left_col(), block.get_right_col(), row + 1, block.get_bottom_row())
+            # if row >= block.get_top_row() and row < block.get_bottom_row():
+            if block.get_top_row() <= row < block.get_bottom_row():
+                b1 = SimpleBlock(None, block.get_left_col(), block.get_right_col(), block.get_top_row(), row)
+                b2 = SimpleBlock(None, block.get_left_col(), block.get_right_col(), row + 1, block.get_bottom_row())
 
-            yield b1, b2
+                yield b1, b2
 
         for col in col_h:
-            if col-1 < block.get_left_col() or col >= block.get_right_col():
-                continue
-            b1 = SimpleBlock(None, block.get_left_col(), col, block.get_top_row(), block.get_bottom_row())
-            b2 = SimpleBlock(None, col + 1, block.get_right_col(), block.get_top_row(), block.get_bottom_row())
+            # if col >= block.get_left_col() and col < block.get_right_col():
+            if block.get_left_col() <= col < block.get_right_col():
+                b1 = SimpleBlock(None, block.get_left_col(), col, block.get_top_row(), block.get_bottom_row())
+                b2 = SimpleBlock(None, col + 1, block.get_right_col(), block.get_top_row(), block.get_bottom_row())
 
-            yield b1, b2
+                yield b1, b2
 
 
     # TODO: How to return a tree instead of a list
@@ -118,10 +149,12 @@ class BlockExtractorDecisionTree(BlockExtractor):
         maximal_blocks = bev2.merge_sheet_top_to_bottom(row_blocks)
 
         print("Maximal blocks extracted.")
-        for block in maximal_blocks:
-            print(block)
+        for cell_type, block in maximal_blocks:
+            print(cell_type, block)
 
         row_h, col_h = self.get_hypotheses(maximal_blocks)
+        print("Row hypotheses ", row_h)
+        print("Column hypotheses ", col_h)
 
         max_row, max_col = sheet.values.shape
         start_block = SimpleBlock(None, 0, max_col - 1, 0, max_row - 1)  # TODO: Check if -1 is correct
@@ -138,10 +171,9 @@ class BlockExtractorDecisionTree(BlockExtractor):
             if (b1 and b2) and gain >= self.threshold:  # Block was split into 2 blocks
                 q.put(b1)
                 q.put(b2)
-                # print("Splitting {} into {} and {}".format(next_block, b1, b2))
-                # print("Information gain: {}".format(gain))
             else:  # Block could not be split
                 blocks.append(next_block)
-                # print("Not splitting block {}".format(next_block))
+
+        postprocess(tags, blocks)
 
         return blocks

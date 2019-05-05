@@ -19,6 +19,13 @@ class CRFLayoutDetector(LayoutDetector):
             self.model = pickle.load(infile)
 
     def detect_layout(self, sheet: Sheet, tags: 'np.array[CellTypePMF]', blocks: List[SimpleBlock]) -> LayoutGraph:
+        if len(blocks) == 2:
+            ## TODO: Connect the two blocks?
+            return LayoutGraph(blocks)
+
+        for block in blocks:
+            print(block)
+
         featurizer = Featurize([sheet], [tags], [blocks])
         X_graph, vertex_dict = np.array(featurizer.get_input_features())
         layout_prediction = self.model.predict(X_graph)[0]

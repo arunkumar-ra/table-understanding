@@ -1,6 +1,7 @@
 import numpy as np
 from cell_classifier_crf.feature_utils import empty_cell
 from type.cell import cell_type
+from type.cell.basic_cell_type import BasicCellType
 
 # Fill empty values with empty
 label_dict = {
@@ -18,10 +19,10 @@ label_dict = {
 
 # TODO: (medium) Inverse dict should be bound with declaration of cell_type instances
 inverse_dict = {
-    0: cell_type.EMPTY,
-    1: cell_type.META,
-    2: cell_type.DATE,
-    3: cell_type.DATA
+    0: BasicCellType.EMPTY,
+    1: BasicCellType.META,
+    2: BasicCellType.DATE,
+    3: BasicCellType.DATA
 }
 
 

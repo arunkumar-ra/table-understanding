@@ -7,8 +7,8 @@ class SimpleBlock(Block):
         self.block_type = block_type
         self.left_col = left_col
         self.right_col = right_col
-        self.upper_row = top_row
-        self.lower_row = bottom_row
+        self.top_row = top_row
+        self.bottom_row = bottom_row
 
         # Support for nested blocks
         self.children = []
@@ -27,10 +27,10 @@ class SimpleBlock(Block):
         return self.right_col
 
     def get_top_row(self):
-        return self.upper_row
+        return self.top_row
 
     def get_bottom_row(self):
-        return self.lower_row
+        return self.bottom_row
 
     def add_child(self, child_block):
         assert isinstance(child_block, self.__class__)
@@ -43,6 +43,18 @@ class SimpleBlock(Block):
     def add_parent(self, block):
         assert isinstance(block, self.__class__)
         block.add_child(self)
+
+    def is_above(self, otherBlock):
+        assert isinstance(otherBlock, self.__class__)
+
+        if self.get_bottom_row() < otherBlock.get_top_row():
+            return True
+
+    def is_below(self, otherBlock):
+        assert isinstance(otherBlock, self.__class__)
+
+        if otherBlock.get_bottom_row() < self.get_top_row():
+            return True
 
     def is_adjacent(self, otherBlock):
         assert isinstance(otherBlock, self.__class__)
@@ -124,6 +136,15 @@ class SimpleBlock(Block):
 
         return x_overlap * y_overlap
 
+    def get_area(self):
+        return (self.get_right_col() - self.get_left_col() + 1) * (self.get_bottom_row() - self.get_top_row() + 1)
+
+    def get_height(self):
+        return self.get_bottom_row() - self.get_top_row() + 1
+
+    def get_width(self):
+        return self.get_right_col() - self.get_left_col() + 1
+
     def __eq__(self, other):  # For testing
         if isinstance(other, self.__class__):
             return self.__dict__ == other.__dict__
@@ -133,4 +154,4 @@ class SimpleBlock(Block):
     def __str__(self):
         block_type = self.block_type.get_best_type().str() if self.block_type else None
 
-        return "[ {} : ({},{}) to ({},{}) ]".format(block_type, self.upper_row, self.left_col, self.lower_row, self.right_col)
+        return "[ {} : ({},{}) to ({},{}) ]".format(block_type, self.top_row, self.left_col, self.bottom_row, self.right_col)

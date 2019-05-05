@@ -7,6 +7,7 @@ from typing import List
 from type.block.simple_block import SimpleBlock
 from type.block import block_type
 import numpy as np
+from type.block.basic_block_type import BasicBlockType
 from type.layout.basic_edge_type import BasicEdgeType
 
 # """
@@ -22,9 +23,9 @@ class ExampleLayoutDetector(LayoutDetector):
         n = set()
         vertex = blocks[idx]
 
-        if vertex.get_block_type().get_best_type() == block_type.VALUE:
+        if vertex.get_block_type().get_best_type() == BasicBlockType.VALUE:
             for idx, block in enumerate(blocks):
-                if block.get_block_type().get_best_type() == block_type.ATTRIBUTE:
+                if block.get_block_type().get_best_type() == BasicBlockType.ATTRIBUTE:
                     n.add(idx)
 
         return n

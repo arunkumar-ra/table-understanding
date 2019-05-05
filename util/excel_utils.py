@@ -8,6 +8,12 @@ def col2num(col):
     return num - 1
 
 
+def num2col(idx):
+    if idx <= 25:
+        return chr(ord('A') + idx)
+    return num2col(idx//26 - 1) + chr(ord('A') + idx%26)
+
+
 def cell2num(cell_name):
     row = int(re.search("[0-9]+", cell_name).group(0))
     col = col2num(re.search("[a-z]+", cell_name, flags=re.IGNORECASE).group(0))

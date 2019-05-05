@@ -20,7 +20,7 @@ class ExcelReader(AbstractFileReader):
             values = self.wb[name].to_array()
             values = np.array(values)
             self.fill_merged_cells(values, self.wb_xlrd.sheet_by_name(name).merged_cells)
-            yield Sheet(values, None)
+            yield Sheet(values, {'name': name})
 
     def get_sheet_by_index(self, idx) -> Sheet:
         values = self.wb.sheet_by_index(idx).to_array()

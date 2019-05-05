@@ -7,18 +7,19 @@ from type.block.basic_block_type import BasicBlockType
 from reader.sheet import Sheet
 from type.cell.cell_type_pmf import CellTypePMF
 from type.block.block_type_pmf import BlockTypePMF
-from type.cell import cell_type
+from type.cell.basic_cell_type import BasicCellType
 
 """
 This block extractor extracts blocks from cell classifications.
 Block Types is defined in block_extractor.new_block_types
 """
 
+#TODO: Switch from cell_type.DATA to BasicCellType.DATA
 cell_type_to_block_type_map = {
-    cell_type.DATA: BasicBlockType.VALUE,
-    cell_type.DATE: BasicBlockType.ATTRIBUTE,
-    cell_type.EMPTY: BasicBlockType.EMPTY,
-    cell_type.META: BasicBlockType.ATTRIBUTE
+    BasicCellType.DATA: BasicBlockType.VALUE,
+    BasicCellType.DATE: BasicBlockType.ATTRIBUTE,
+    BasicCellType.EMPTY: BasicBlockType.EMPTY,
+    BasicCellType.META: BasicBlockType.ATTRIBUTE
 }
 
 
