@@ -45,14 +45,6 @@ class BlockColorizer:
                     worksheet[col + str(i + 1)].fill = color
 
                     b = Border()
-                    # if i == block.get_top_row():
-                    #     ws[col + str(i+1)].border = Border(top=Side(border_style='thick', color='FF000000'))
-                    # if i == block.get_bottom_row():
-                    #     ws[col + str(i + 1)].border = Border(bottom=Side(border_style='thick', color='FF000000'))
-                    # if j == block.get_left_col():
-                    #     ws[col + str(i + 1)].border = Border(left=Side(border_style='thick', color='FF000000'))
-                    # if j == block.get_right_col():
-                    #     ws[col + str(i + 1)].border = Border(right=Side(border_style='thick', color='FF000000'))
 
                     if i == block.get_top_row():
                         b.top = Side(border_style='thick', color='FF000000')

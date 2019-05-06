@@ -1,7 +1,6 @@
 import unittest
 from type.cell.cell_type_pmf import CellTypePMF
 
-
 class TestCellClass(unittest.TestCase):
     def testCellClass(self):
         cell_class_dict = {

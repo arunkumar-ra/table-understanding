@@ -20,6 +20,7 @@ We keep splitting until we reach a point where the entropy loss (or information 
 class BlockExtractorDecisionTree(BlockExtractor):
 
     def __init__(self, threshold=0.20):
+        # TODO: Put all hyper parameters here
         self.threshold = threshold
 
     """
@@ -66,42 +67,16 @@ class BlockExtractorDecisionTree(BlockExtractor):
                 entropy -= p * np.log2(p)
         return entropy
 
-    def get_weighted_entropy(self, block: SimpleBlock, block_dist) -> float:
-        # Weights are hyperparameters
-
-        weights = {
-            BasicCellType.EMPTY: 0.5,
-            BasicCellType.DATA: 1,
-            BasicCellType.DATE: 1,
-            BasicCellType.META: 1
-        }
-
-        entropy = 0.0
-        # block_size = self.get_block_size(block)
-
-        # Adjusted block size based on weights
-        block_size = 0
-        for cell_type in block_dist:
-            block_size += block_dist[cell_type] * weights[cell_type]
-
-        if block_size != 0:
-            for cell_type in block_dist:
-                if block_dist[cell_type] != 0:
-                    p = block_dist[cell_type] * weights[cell_type] / block_size
-                    if p != 0:
-                        entropy -= p * np.log2(p)
-        return entropy
-
     def get_best_split(self, block: SimpleBlock, maximal_blocks: List[Tuple[CellType, SimpleBlock]], row_h, col_h):
 
         best_split = None, None
         best_split_entropy = 100
 
-        base_entropy = self.get_weighted_entropy(block, self.get_cell_distribution_of_split(block, maximal_blocks))
+        base_entropy = self.get_entropy(block, self.get_cell_distribution_of_split(block, maximal_blocks))
 
         for b1, b2 in self.get_splits(block, row_h, col_h):
-            entropy1 = self.get_weighted_entropy(b1, self.get_cell_distribution_of_split(b1, maximal_blocks))
-            entropy2 = self.get_weighted_entropy(b2, self.get_cell_distribution_of_split(b2, maximal_blocks))
+            entropy1 = self.get_entropy(b1, self.get_cell_distribution_of_split(b1, maximal_blocks))
+            entropy2 = self.get_entropy(b2, self.get_cell_distribution_of_split(b2, maximal_blocks))
             b1_size = self.get_block_size(b1)
             b2_size = self.get_block_size(b2)
 
@@ -140,8 +115,25 @@ class BlockExtractorDecisionTree(BlockExtractor):
 
                 yield b1, b2
 
+    # TODO: MOve elsewhere?
+    ## Half hacky idea
+    def split_needed(self, block: SimpleBlock, maximal_blocks: List[Tuple[CellType, SimpleBlock]]):
+        dist = self.get_cell_distribution_of_split(block, maximal_blocks)
 
-    # TODO: How to return a tree instead of a list
+        value_and_empty = 0
+        if BasicCellType.DATA in dist:
+            value_and_empty += dist[BasicCellType.DATA]
+        if BasicCellType.EMPTY in dist:
+            value_and_empty += dist[BasicCellType.EMPTY]
+
+        block_size = block.get_area()
+
+        # Do not split blocks with only value and empty cells
+        # Yet another hyperparameter
+        if block_size - value_and_empty < 3:
+            return False
+        return True
+
     def extract_blocks(self, sheet: Sheet, tags: 'np.array[CellTypePMF]') -> List[SimpleBlock]:
         # Get simple set of blocks from block extractor v2
         bev2 = BlockExtractorV2()
@@ -165,9 +157,16 @@ class BlockExtractorDecisionTree(BlockExtractor):
 
         while not q.empty():
             next_block = q.get()
-            split_blocks, gain = self.get_best_split(next_block, maximal_blocks, row_h, col_h)
 
+            ## One more check : If only data and empty cells are in both blocks, then the split is not useful.
+            ## TODO: Find a neater way to incorporate this into the system
+            if not self.split_needed(next_block, maximal_blocks):
+                blocks.append(next_block)
+                continue
+
+            split_blocks, gain = self.get_best_split(next_block, maximal_blocks, row_h, col_h)
             b1, b2 = split_blocks
+
             if (b1 and b2) and gain >= self.threshold:  # Block was split into 2 blocks
                 q.put(b1)
                 q.put(b2)
