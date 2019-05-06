@@ -95,8 +95,11 @@ def v1(file_name, config_file):
     # Colorize blocks
     if config['colorize']:
         print("Colorizing output")
-        bc = BlockColorizer(file_name)
-        bc.apply_color(blockList)
+        if file_name.endswith(".xls") or file_name.endswith(".csv"):
+            print("Colorizing not enabled in xls/csv files")
+        else:
+            bc = BlockColorizer(file_name)
+            bc.apply_color(blockList)
 
     if config['output_dataframe']:
         print("Extracting dataframes from sheet")
@@ -106,7 +109,7 @@ def v1(file_name, config_file):
             dataframe = dfe.extract_dataframe()
             if dataframe is not None:
                 dataframes.append(dataframe)
-                dataframe.to_csv("output/" + str(i) + ".csv")
+                dataframe.to_csv(file_name + "_" + str(i) + ".csv")
 
         return dataframes
 
@@ -119,7 +122,7 @@ def main():
     # Try: Web_ACS2017_Educ.xlsx, P1_County_1yr_interim.xlsx,
     # alabama.xlsx, 2018 County Health Rankings Alabama Data - v3.xlsx
     # for file_name in file_list:
-    file_name = file_list[9] # 5, 4, 11, 9
+    file_name = file_list[8] # 5, 4, 11, 9
     dataframes = v1(file_name=file_name, config_file="cfg/test.yaml")
 
 
