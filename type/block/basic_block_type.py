@@ -28,3 +28,21 @@ Define your own block types here or in other classes derived from BasicBlockType
 """
 class AdvancedBlockType(BasicBlockType):
     pass
+
+class BasicBlockType2:
+    ROW_HEAD = BlockType("row_head", 0)
+    COLUMN_HEAD = BlockType("column_head", 1)
+    DATA = BlockType("data", 2)
+    METADATA = BlockType("metadata", 3)
+    
+
+    str_to_block_type = {
+        "row_head": ROW_HEAD,
+        "column_head": COLUMN_HEAD,
+        "data": DATA,
+        "metadata": METADATA        
+    }
+
+    @staticmethod
+    def block_type_count():
+        return len(SSIBlockType.str_to_block_type) 

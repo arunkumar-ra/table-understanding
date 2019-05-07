@@ -12,7 +12,8 @@ from configurator.configurator import Configurator
 import sys, traceback
 import time
 import yaml
-
+import sys
+import getopt
 
 class EndToEnd:
     def __init__(self, input_file, cell_classifier: CellClassifier, block_extractor: BlockExtractor, layout_detector: LayoutDetector):
@@ -31,7 +32,7 @@ class EndToEnd:
         for sheet in reader.get_sheets():
             tags, blocks, layout = [[]], [], None
             try:
-                print("Processing sheet: {}".format(sheet.meta['name']))
+                # print("Processing sheet: {}".format(sheet.meta['name']))
                 tags = self.cell_classifier.classify_cells(sheet)
                 blocks = self.block_extractor.extract_blocks(sheet, tags)
                 layout = self.layout_detector.detect_layout(sheet, tags, blocks)
@@ -66,14 +67,17 @@ Using crf cell classifier
 and crf layout detector
 You can create different functions for different combinations of classifiers 
 """
-def v1(file_name, config_file):
+def v1(file_name, config_file, block, layout):
     print("Processing file: {}".format(file_name))
     config = yaml.load(open(config_file))
     print("Using configuration: {}".format(config))
     configurator = Configurator(config)
 
     cell_classifier = configurator.get_component("cell_classifier")
-    block_extractor = configurator.get_component("block_extractor")
+    if block == "heur":
+        block_extractor = configurator.get_component("block_extractor_heuristic")
+    else:
+        block_extractor = configurator.get_component("block_extractor")
     layout_detector = configurator.get_component("layout_detector")
 
     etoe = EndToEnd(file_name, cell_classifier, block_extractor, layout_detector)
@@ -116,15 +120,48 @@ def v1(file_name, config_file):
     return None
 
 
-def main():
+"""
+Instructions to run the program
+"""
+def usage():    
+    print("Usage: python end_to_end.py -b <institute> -l <model_type>")
+    print("<model_type> must be either 'prob' or 'heur'.")    
+
+"""
+Incorrect way of running the program
+Print instructions and exit 
+"""  
+def print_usage():
+    print('Incorrect usage')
+    usage()
+    sys.exit(2)
+
+def main(argv):
+    try:
+        options, args = getopt.getopt(argv, "hb:l:f:")
+    except getopt.GetoptError:
+        print_usage()
+    block, layout = "prob", "prob"
+    
+    for option, arg in options:
+        if option == 'h':
+            print_usage()
+        if option in ("-b"):
+            block = arg            
+        elif option in ("-l"):
+            layout = arg        
+
+    if (block != "prob" and block != "heur") or (layout != "prob" and layout != "heur"):
+        print_usage()    
+
     file_list = yaml.load(open("cfg/test_files.yaml"))
 
     # Try: Web_ACS2017_Educ.xlsx, P1_County_1yr_interim.xlsx,
     # alabama.xlsx, 2018 County Health Rankings Alabama Data - v3.xlsx
     # for file_name in file_list:
     file_name = file_list[8] # 5, 4, 11, 9
-    dataframes = v1(file_name=file_name, config_file="cfg/test.yaml")
+    dataframes = v1(file_name=file_name, config_file="cfg/test.yaml", block=block, layout=layout)
 
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:])

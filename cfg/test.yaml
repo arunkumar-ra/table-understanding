@@ -7,6 +7,8 @@ block_extractor:
   threshold: 0.1
 layout_detector:
   class: layout_detector.crf.crf_layout_detector.CRFLayoutDetector
+block_extractor_heuristic:
+  class: block_extractor.block_extractor_heuristic.BlockExtractorHeuristic
 
 # Settings
 
