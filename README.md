@@ -9,14 +9,16 @@ it's first argument.
 
 ### Configuration
 Settings file: cfg/test.yaml
+
 To write a colorized excel sheet with block information:
    colorize: true/false
    (Please note that colorize works *only with xlsx files* due to the limitations of the library we are using)
+
 To write out dataframes from detected 'value' blocks:
    output_dataframe: true/false
 
 Default input file: cfg/test_files.yaml
-List of files to process
+    (Contains the list of files to process)
 
 
 ### This project implements the table extraction pipeline
@@ -33,6 +35,7 @@ You can write your own extractors for the 3 steps in the corresponding folder, b
 
 Base Class Files:
 cell_classifier.py, block_extractor.py, layout_detector.py
+
 Corresponding to each layer, we have implemented an example class derived from it's base class.
 example_cell_classifier.py, example_block_extractor.py, example_layout_detector.py
 
