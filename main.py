@@ -35,9 +35,9 @@ def v1(file_name, config_file):
     block_extractor = configurator.get_component("block_extractor")
     layout_detector = configurator.get_component("layout_detector")
 
-    etoe = EndToEnd(file_name, cell_classifier, block_extractor, layout_detector)
+    etoe = EndToEnd(cell_classifier, block_extractor, layout_detector)
 
-    sheetList, tagList, blockList, layoutList = etoe.get_layout()
+    sheetList, tagList, blockList, layoutList = etoe.get_layout(file_name)
 
     print("Number of sheets = {}".format(len(tagList)))
 
@@ -77,7 +77,7 @@ def v1(file_name, config_file):
 
 def main():
 
-    file_list_fn = "cfg/test_files.yaml"
+    file_list_fn = "cfg/test_file.yaml"
     if len(sys.argv) > 1:
         file_list_fn = sys.argv[1]
     file_list = yaml.load(open(file_list_fn))

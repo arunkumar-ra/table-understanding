@@ -6,6 +6,9 @@ To run a file against the default extractors, use main.py and pass the file with
 it's first argument.
 'python main.py cfg/test_file.yaml'
 
+Default input file if no argument is provided: cfg/test_file.yaml
+    (Contains the list of files to process)
+
 
 ### Configuration
 Settings file: cfg/test.yaml
@@ -16,9 +19,6 @@ To write a colorized excel sheet with block information:
 
 To write out dataframes from detected 'value' blocks:
    output_dataframe: true/false
-
-Default input file: cfg/test_files.yaml
-    (Contains the list of files to process)
 
 
 ### This project implements the table extraction pipeline

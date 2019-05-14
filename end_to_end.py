@@ -10,16 +10,15 @@ import time
 
 
 class EndToEnd:
-    def __init__(self, input_file, cell_classifier: CellClassifier, block_extractor: BlockExtractor, layout_detector: LayoutDetector):
-        self.input_file = input_file
+    def __init__(self, cell_classifier: CellClassifier, block_extractor: BlockExtractor, layout_detector: LayoutDetector):
         self.cell_classifier = cell_classifier
         self.block_extractor = block_extractor
         self.layout_detector = layout_detector
 
-    def get_layout(self):
+    def get_layout(self, input_file):
         start_time = time.time()
 
-        reader = get_file_reader(self.input_file)
+        reader = get_file_reader(input_file)
 
         sheetList, tagList, blockList, layoutList = [], [], [], []
 
@@ -44,4 +43,3 @@ class EndToEnd:
         print("Time taken to process sheets : ", (end_time - start_time), "s")
 
         return sheetList, tagList, blockList, layoutList
-
