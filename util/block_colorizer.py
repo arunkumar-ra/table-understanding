@@ -5,11 +5,13 @@ from type.block.simple_block import SimpleBlock
 from typing import List
 from type.block.basic_block_type import BasicBlockType
 from openpyxl.styles import Border, Side
+import os
 
 
 class BlockColorizer:
-    def __init__(self, file_name):
+    def __init__(self, file_name, output_dir):
         self.file_name = file_name
+        self.output_dir = output_dir
         self.wb = load_workbook(file_name)
         # self._red = PatternFill(start_color='FFFF0000', end_color='FFFF0000', fill_type='solid')  # Heading
         self._sandal = PatternFill(start_color='FFe2ba88', end_color='FFe2ba88', fill_type='solid')  # HEADER
@@ -23,7 +25,8 @@ class BlockColorizer:
             ws = self.wb.worksheets[sheet_no]
             self._apply_color(ws, blockList[sheet_no])
 
-        self.wb.save(self.file_name + "_colorised.xlsx")
+        base_name = os.path.basename(self.file_name)
+        self.wb.save(os.path.join(self.output_dir, base_name + "_colorised.xlsx"))
 
     def _apply_color(self, worksheet, blocks: List[SimpleBlock]):
         for block in blocks:

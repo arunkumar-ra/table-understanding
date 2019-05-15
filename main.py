@@ -6,8 +6,8 @@ from annotator.yaml_annotator import YAMLAnnotator
 from end_to_end import EndToEnd
 
 import yaml
-import sys
-
+import argparse
+import os
 
 def print_details(idx, tags, blocks, layout):
     print("Sheet {}".format(idx))
@@ -25,7 +25,8 @@ Using crf cell classifier
 and crf layout detector
 You can create different functions for different combinations of classifiers 
 """
-def v1(file_name, config_file):
+def v1(file_name, config_file, output_dir):
+    base_name = os.path.basename(file_name)  # Returns only the file name
     print("Processing file: {}".format(file_name))
     config = yaml.load(open(config_file))
     print("Using configuration: {}".format(config))
@@ -49,7 +50,9 @@ def v1(file_name, config_file):
             annotator = YAMLAnnotator()
             sheet_annotation = annotator.get_annotation(i, None, tagList[i], blockList[i], layoutList[i])
             print(sheet_annotation)
-            annotator.write_yaml(sheet_annotation, "annotator_output_{}.yaml".format(i))
+            fn = base_name + ("_" + str(i) + "_" + sheetList[i].meta['name'] if 'name' in sheetList[i].meta else "")\
+                 + ".yaml"
+            annotator.write_yaml(sheet_annotation, os.path.join(args.output, fn))
 
     # Colorize blocks
     if config['colorize']:
@@ -57,7 +60,7 @@ def v1(file_name, config_file):
         if file_name.endswith(".xls") or file_name.endswith(".csv"):
             print("Colorizing not enabled in xls/csv files")
         else:
-            bc = BlockColorizer(file_name)
+            bc = BlockColorizer(file_name, output_dir)
             bc.apply_color(blockList)
 
     if config['output_dataframe']:
@@ -68,27 +71,34 @@ def v1(file_name, config_file):
             dataframe = dfe.extract_dataframe()
             if dataframe is not None:
                 dataframes.append(dataframe)
-                dataframe.to_csv(file_name + "_" + str(i) + ".csv")
+                fn = base_name +\
+                     ("_" + str(i) + "_" + sheetList[i].meta['name'] if 'name' in sheetList[i].meta else "") + ".csv"
+                dataframe.to_csv(os.path.join(args.output, fn))
 
         return dataframes
 
     return None
 
 
-def main():
+def main(args):
 
-    file_list_fn = "cfg/test_file.yaml"
-    if len(sys.argv) > 1:
-        file_list_fn = sys.argv[1]
-    file_list = yaml.load(open(file_list_fn))
+    file_list = yaml.load(open(args.files))
 
     # Try: Web_ACS2017_Educ.xlsx, P1_County_1yr_interim.xlsx,
     # alabama.xlsx, 2018 County Health Rankings Alabama Data - v3.xlsx
-    # for file_name in file_list:
-    # file_name = file_list[8] # 5, 4, 11, 9
     for file_name in file_list:
-        dataframes = v1(file_name=file_name, config_file="cfg/test.yaml")
+        dataframes = v1(file_name=file_name, config_file=args.config, output_dir=args.output)
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description='Run table understanding on xls/xlsx/csv files')
+    parser.add_argument("--config", default="cfg/default.yaml", help="config file to load")
+    parser.add_argument("--files", default="cfg/files.yaml", help="list of files to process in yaml format. Each file" +
+                        " is in a new line preceded by '- '")
+    parser.add_argument("--output", default="./", help="Output directory for all output files")  # Default is current directory
+
+    args = parser.parse_args()
+
+    main(args)
+
+## fix bug in cmo file

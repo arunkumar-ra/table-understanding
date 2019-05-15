@@ -4,6 +4,7 @@ import pyexcel as pyx
 from reader.sheet import Sheet
 from typing import List
 
+
 class CsvReader(AbstractFileReader):
     def __init__(self, filename):
         super().__init__()

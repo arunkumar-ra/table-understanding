@@ -107,6 +107,8 @@ def split_header_blocks_from_attribute_blocks(blocks: List[SimpleBlock]):
 
 
 def find_global_attribute_blocks(blocks: List[SimpleBlock]):
+    if len(blocks) == 1:
+        return
     ## If block is above every other block
     ## and not aligned with the block below it : it is a global attribute block
     for block_a in blocks:
@@ -119,7 +121,7 @@ def find_global_attribute_blocks(blocks: List[SimpleBlock]):
         if top_block:
             aligned_block_found = False
             for block_c in blocks:
-                if block_c.are_blocks_vertical(top_block) and block_c.are_blocks_within_x_row_or_column(3):
+                if block_c.are_blocks_vertical(top_block) and block_c.are_blocks_within_x_row_or_column(3, top_block):
                     aligned_block_found = True
                     break
             if not aligned_block_found:
@@ -138,7 +140,8 @@ def find_global_attribute_blocks(blocks: List[SimpleBlock]):
         if bottom_block:
             aligned_block_found = False
             for block_c in blocks:
-                if block_c.are_blocks_vertical(bottom_block) and block_c.are_blocks_within_x_row_or_column(3):
+                if block_c.are_blocks_vertical(bottom_block) and\
+                        block_c.are_blocks_within_x_row_or_column(3, bottom_block):
                     aligned_block_found = True
                     break
             if not aligned_block_found:

@@ -8,7 +8,7 @@ from layout_detector.crf.crf_layout_detector import CRFLayoutDetector
 
 class TestConfigurator(unittest.TestCase):
     def testConfigurator(self):
-        config_file = "../../cfg/test.yaml"
+        config_file = "../../cfg/default.yaml"
         config = yaml.load(open(config_file))
 
         configurator = Configurator(config)
