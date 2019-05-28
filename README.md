@@ -2,12 +2,16 @@
 Python version: 3
 
 ### To run
-To run a file against the default extractors, use main.py and pass the file with the list of input files as 
-it's first argument.
-'python main.py cfg/test_file.yaml'
+usage: main.py [-h] [--config CONFIG] [--files FILES] [--output OUTPUT]
 
-Default input file if no argument is provided: cfg/test_file.yaml
-    (Contains the list of files to process)
+Run table understanding on xls/xlsx/csv files
+
+optional arguments:
+  -h, --help       show this help message and exit
+  --config CONFIG  config file to load (default=cfg/default.yaml)
+  --files FILES    list of files to process in yaml format. Each file is in a
+                   new line preceded by '- ' (default=cfg/files.yaml)
+  --output OUTPUT  Output directory for all output files (default=./)
 
 
 ### Configuration
