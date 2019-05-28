@@ -8,9 +8,12 @@ Run table understanding on xls/xlsx/csv files
 
 optional arguments:
   -h, --help       show this help message and exit
+  
   --config CONFIG  config file to load (default=cfg/default.yaml)
+  
   --files FILES    list of files to process in yaml format. Each file is in a
                    new line preceded by '- ' (default=cfg/files.yaml)
+                   
   --output OUTPUT  Output directory for all output files (default=./)
 
 
