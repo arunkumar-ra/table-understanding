@@ -6,14 +6,12 @@ Experimental code. Subject to change
 from type.block.simple_block import SimpleBlock
 # from block_extractor.new_block_types import block_map
 from type.block.basic_block_type import BasicBlockType
-from typing import List
 from type.layout.layout_graph import LayoutGraph
 from typing import List
 from reader.sheet import Sheet
 import numpy as np
-from type.layout.edge_type import EdgeType
 
-from type.block.block_type import BlockType
+
 class Featurize:
     def __init__(self, sheetList: List, tagsList: List, blocksList: List):
         self.sheetList = sheetList

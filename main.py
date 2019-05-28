@@ -101,4 +101,4 @@ if __name__ == "__main__":
 
     main(args)
 
-## fix bug in cmo file
+## fix colorization in cmo file

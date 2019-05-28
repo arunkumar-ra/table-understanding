@@ -121,7 +121,7 @@ def find_global_attribute_blocks(blocks: List[SimpleBlock]):
         if top_block:
             aligned_block_found = False
             for block_c in blocks:
-                if block_c.are_blocks_vertical(top_block) and block_c.are_blocks_within_x_row_or_column(3, top_block):
+                if block_c.are_blocks_vertical(block_a) and block_c.are_blocks_within_x_row_or_column(3, block_a):
                     aligned_block_found = True
                     break
             if not aligned_block_found:
@@ -140,8 +140,8 @@ def find_global_attribute_blocks(blocks: List[SimpleBlock]):
         if bottom_block:
             aligned_block_found = False
             for block_c in blocks:
-                if block_c.are_blocks_vertical(bottom_block) and\
-                        block_c.are_blocks_within_x_row_or_column(3, bottom_block):
+                if block_c.are_blocks_vertical(block_a) and\
+                        block_c.are_blocks_within_x_row_or_column(3, block_a):
                     aligned_block_found = True
                     break
             if not aligned_block_found:
