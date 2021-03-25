@@ -1,7 +1,7 @@
 numpy
 pystruct
 sklearn
-pyyaml==3.12
+pyyaml==5.4
 pyexcel==0.5.7
 pyexcel-io==0.5.6
 pyexcel-xls==0.5.6
